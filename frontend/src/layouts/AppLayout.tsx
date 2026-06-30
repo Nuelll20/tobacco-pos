@@ -1,19 +1,22 @@
-import { Outlet } from "react-router-dom";
+import Header from "@/components/layout/Header";
+import Sidebar from "@/components/layout/Sidebar";
 
-export default function AppLayout() {
+type AppLayoutProps = {
+  children: React.ReactNode;
+};
+
+export default function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className="min-h-screen flex bg-slate-50">
-      <aside>
-        Sidebar
-      </aside>
+    <div className="flex h-screen bg-muted/30">
+      <Sidebar />
 
-      <main className="flex-1">
-        Header
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <Header />
 
-        <div className="p-6">
-          <Outlet />
-        </div>
-      </main>
+        <main className="flex-1 overflow-auto p-6">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

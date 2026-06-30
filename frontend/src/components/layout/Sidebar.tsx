@@ -1,28 +1,39 @@
-import { LayoutDashboard, Package, Boxes, ShoppingCart, Settings } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import {
+    LayoutDashboard,
+    Package,
+    Boxes,
+    ShoppingCart,
+    Settings,
+} from "lucide-react";
 
 const menus = [
     {
         title: "Dashboard",
         icon: LayoutDashboard,
+        href: "/",
     },
     {
         title: "Products",
         icon: Package,
+        href: "/products",
     },
     {
         title: "Inventory",
         icon: Boxes,
+        href: "/inventory",
     },
     {
         title: "Transactions",
         icon: ShoppingCart,
+        href: "/transactions",
     },
     {
         title: "Settings",
         icon: Settings,
+        href: "/settings",
     },
 ];
-
 export default function Sidebar() {
     return (
         <aside className="w-64 border-r bg-background">
@@ -37,13 +48,19 @@ export default function Sidebar() {
                     const Icon = menu.icon;
 
                     return (
-                        <button
+                        <NavLink
                             key={menu.title}
-                            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition hover:bg-muted"
+                            to={menu.href}
+                            className={({ isActive }) =>
+                                `flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${isActive
+                                    ? "bg-primary text-primary-foreground"
+                                    : "hover:bg-muted"
+                                }`
+                            }
                         >
                             <Icon className="h-5 w-5" />
                             {menu.title}
-                        </button>
+                        </NavLink>
                     );
                 })}
             </nav>

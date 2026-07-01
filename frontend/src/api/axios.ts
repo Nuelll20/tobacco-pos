@@ -1,0 +1,24 @@
+import axios from "axios";
+import { env } from "@/config/env";
+import { useAuthStore } from "@/stores/authStore";
+
+const api = axios.create({
+    baseURL: env.apiUrl,
+    headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    },
+});
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            useAuthStore.getState().logout();
+        }
+
+        return Promise.reject(error);
+    }
+);
+
+export default api;

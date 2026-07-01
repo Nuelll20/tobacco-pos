@@ -1,9 +1,13 @@
-import api from "@/services/api";
+import api from "@/api/axios";
+import type { LoginRequest, LoginResponse } from "@/types/auth";
 
-import type { LoginFormData } from "@/schemas/auth";
+export const login = async (
+  payload: LoginRequest
+): Promise<LoginResponse> => {
 
-export async function login(data: LoginFormData) {
-    const response = await api.post("/login", data);
+  console.log("LOGIN PAYLOAD:", payload);
 
-    return response.data;
-}
+  const { data } = await api.post<LoginResponse>("/login", payload);
+
+  return data;
+};

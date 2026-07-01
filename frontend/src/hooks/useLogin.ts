@@ -1,27 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
-import { login } from "@/services/auth.service";
+import { login as loginService } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/authStore";
 
 export function useLogin() {
-    const setUser = useAuthStore((state) => state.setUser);
-    const setToken = useAuthStore((state) => state.setToken);
+    const login = useAuthStore((state) => state.login);
+
+    const navigate = useNavigate();
 
     return useMutation({
-        mutationFn: login,
+        mutationFn: loginService,
 
         onSuccess: (data) => {
-            /**
-             * Struktur response Laravel nanti kurang lebih:
-             *
-             * {
-             *   user: {...},
-             *   token: "xxxxxxxx"
-             * }
-             */
+            login(data.user, data.token);
 
-            setUser(data.user);
-            setToken(data.token);
+            navigate("/");
         },
 
         onError: (error) => {

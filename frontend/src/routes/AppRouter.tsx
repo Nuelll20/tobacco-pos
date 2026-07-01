@@ -11,14 +11,17 @@ import Settings from "@/pages/settings/Settings";
 import Login from "@/pages/auth/Login";
 import NotFound from "@/pages/not-found/NotFound";
 import ProtectedRoute from "@/routes/ProtectedRoute";
+import GuestRoute from "@/routes/GuestRoute";
 
 export default function AppRouter() {
     return (
         <BrowserRouter>
             <Routes>
                 {/* Public */}
-                <Route element={<AuthLayout />}>
-                    <Route path="/login" element={<Login />} />
+                <Route element={<GuestRoute />}>
+                    <Route element={<AuthLayout />}>
+                        <Route path="/login" element={<Login />} />
+                    </Route>
                 </Route>
 
                 {/* Protected */}

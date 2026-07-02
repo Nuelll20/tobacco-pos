@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 
 import { useProducts } from "@/hooks/useProducts";
-
 import ProductToolbar from "@/components/products/ProductToolbar";
 import ProductTable from "@/components/products/ProductTable";
 
@@ -51,7 +50,9 @@ export default function Products() {
           onSearchChange={setSearch}
         />
 
-        <ProductTable products={products} />
+        <ProductTable
+          products={products}
+        />
       </CardContent>
     </Card>
   );

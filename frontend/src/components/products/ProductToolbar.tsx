@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import ProductSheet from "@/components/products/ProductSheet";
 import { Input } from "@/components/ui/input";
 
 type Props = {
@@ -18,10 +18,7 @@ export default function ProductToolbar({
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
       />
-
-      <Button>
-        + Add Product
-      </Button>
+      <ProductSheet />
     </div>
   );
 }

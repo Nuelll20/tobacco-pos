@@ -6,13 +6,22 @@ import {
   type ProductFormData,
 } from "@/schemas/product";
 
+import { getErrorMessage } from "@/lib/error";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCreateProduct } from "@/hooks/useCreateProduct";
 
-export default function ProductForm() {
+
+type ProductFormProps = {
+  onSuccess?: () => void;
+};
+
+export default function ProductForm({
+  onSuccess,
+}: ProductFormProps) {
   const {
     register,
     handleSubmit,
@@ -40,7 +49,15 @@ export default function ProductForm() {
   const onSubmit = (data: ProductFormData) => {
     createProductMutation.mutate(data, {
       onSuccess: () => {
+        toast.success("Product created successfully");
+
         reset();
+
+        onSuccess?.();
+      },
+
+      onError: (error) => {
+        toast.error(getErrorMessage(error));
       },
     });
   };

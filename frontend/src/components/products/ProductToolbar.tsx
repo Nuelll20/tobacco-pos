@@ -1,4 +1,4 @@
-import ProductSheet from "@/components/products/ProductSheet";
+import ProductDialog from "@/components/products/ProductDialog";
 import { Input } from "@/components/ui/input";
 
 type Props = {
@@ -18,7 +18,7 @@ export default function ProductToolbar({
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
       />
-      <ProductSheet />
+      <ProductDialog />
     </div>
   );
 }

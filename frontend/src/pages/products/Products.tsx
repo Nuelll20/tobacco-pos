@@ -15,6 +15,7 @@ import ProductTable from "@/components/products/ProductTable";
 import ProductDialog from "@/components/products/ProductDialog";
 import ProductTableSkeleton from "@/components/products/ProductTableSkeleton";
 import ProductPagination from "@/components/products/ProductPagination";
+import ProductErrorState from "@/components/products/ProductErrorState";
 
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error";
@@ -47,7 +48,12 @@ export default function Products() {
   const [productToDelete, setProductToDelete] =
     useState<Product | null>(null);
 
-  const { data, isLoading, isError } = useProducts({
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+  } = useProducts({
     page,
     per_page: perPage,
     search: search || undefined,
@@ -70,10 +76,6 @@ export default function Products() {
     setPage(1);
   };
 
-  if (isError) {
-    return <p>Failed to load products.</p>;
-  }
-
   return (
     <>
       <div className="flex h-full min-h-0 flex-col">
@@ -94,6 +96,12 @@ export default function Products() {
 
             {isLoading ? (
               <ProductTableSkeleton />
+            ) : isError ? (
+              <ProductErrorState
+                onRetry={() => {
+                  void refetch();
+                }}
+              />
             ) : (
               <>
                 <ProductTable

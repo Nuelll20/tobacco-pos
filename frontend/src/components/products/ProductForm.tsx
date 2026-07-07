@@ -76,25 +76,38 @@ export default function ProductForm({
     }
   }, [product, reset]);
 
+  const isSaving =
+    createProductMutation.isPending ||
+    updateProductMutation.isPending;
+
   const onSubmit = (data: ProductFormData) => {
-    const mutation = product
-      ? updateProductMutation
-      : createProductMutation;
+    if (product) {
+      updateProductMutation.mutate(
+        {
+          id: product.id,
+          payload: data,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Product updated successfully.");
 
-    const payload = product
-      ? {
-        id: product.id,
-        payload: data,
-      }
-      : data;
+            reset();
 
-    mutation.mutate(payload as never, {
+            onSuccess?.();
+          },
+
+          onError: (error) => {
+            toast.error(getErrorMessage(error));
+          },
+        }
+      );
+
+      return;
+    }
+
+    createProductMutation.mutate(data, {
       onSuccess: () => {
-        toast.success(
-          product
-            ? "Product updated successfully."
-            : "Product created successfully."
-        );
+        toast.success("Product created successfully.");
 
         reset();
 
@@ -122,11 +135,9 @@ export default function ProductForm({
       <Button
         type="submit"
         className="w-full"
-        disabled={createProductMutation.isPending}
+        disabled={isSaving}
       >
-        {createProductMutation.isPending
-          ? "Saving..."
-          : "Save Product"}
+        {isSaving ? "Saving..." : "Save Product"}
       </Button>
     </form>
   );

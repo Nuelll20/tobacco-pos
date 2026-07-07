@@ -16,7 +16,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Pencil, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 type Props = {
   products: Product[];
@@ -27,6 +33,14 @@ type Props = {
   onDelete: (product: Product) => void;
 };
 
+type SortableTableHeadProps = {
+  label: string;
+  column: ProductSortBy;
+  sortBy?: ProductSortBy;
+  sortDirection?: SortDirection;
+  onSort: (column: ProductSortBy) => void;
+};
+
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -34,16 +48,54 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-
-const getSortLabel = (
+const getSortIcon = (
   column: ProductSortBy,
   sortBy?: ProductSortBy,
   sortDirection?: SortDirection
 ) => {
-  if (sortBy !== column) return "";
+  if (sortBy !== column) {
+    return <ArrowUpDown className="ml-2 size-3.5 opacity-40" />;
+  }
 
-  return sortDirection === "asc" ? " ↑" : " ↓";
+  if (sortDirection === "asc") {
+    return <ArrowUp className="ml-2 size-3.5" />;
+  }
+
+  return <ArrowDown className="ml-2 size-3.5" />;
 };
+
+function SortableTableHead({
+  label,
+  column,
+  sortBy,
+  sortDirection,
+  onSort,
+}: SortableTableHeadProps) {
+  const isActive = sortBy === column;
+
+  return (
+    <TableHead
+      className="sticky top-0 z-10 bg-background"
+      aria-sort={
+        isActive
+          ? sortDirection === "asc"
+            ? "ascending"
+            : "descending"
+          : "none"
+      }
+    >
+      <button
+        type="button"
+        className="inline-flex items-center font-medium transition-colors hover:text-foreground"
+        onClick={() => onSort(column)}
+      >
+        {label}
+        {getSortIcon(column, sortBy, sortDirection)}
+      </button>
+    </TableHead>
+  );
+}
+
 export default function ProductTable({
   products,
   sortBy,
@@ -58,25 +110,21 @@ export default function ProductTable({
         <Table className="min-w-[900px]">
           <TableHeader>
             <TableRow>
-              <TableHead className="sticky top-0 z-10 bg-background">
-                <button
-                  type="button"
-                  className="font-medium hover:text-foreground"
-                  onClick={() => onSort("sku")}
-                >
-                  SKU{getSortLabel("sku", sortBy, sortDirection)}
-                </button>
-              </TableHead>
+              <SortableTableHead
+                label="SKU"
+                column="sku"
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSort={onSort}
+              />
 
-              <TableHead className="sticky top-0 z-10 bg-background">
-                <button
-                  type="button"
-                  className="font-medium hover:text-foreground"
-                  onClick={() => onSort("name")}
-                >
-                  Product{getSortLabel("name", sortBy, sortDirection)}
-                </button>
-              </TableHead>
+              <SortableTableHead
+                label="Product"
+                column="name"
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSort={onSort}
+              />
 
               <TableHead className="sticky top-0 z-10 bg-background">
                 Purchase
@@ -86,15 +134,13 @@ export default function ProductTable({
                 Selling
               </TableHead>
 
-              <TableHead className="sticky top-0 z-10 bg-background">
-                <button
-                  type="button"
-                  className="font-medium hover:text-foreground"
-                  onClick={() => onSort("stock")}
-                >
-                  Stock{getSortLabel("stock", sortBy, sortDirection)}
-                </button>
-              </TableHead>
+              <SortableTableHead
+                label="Stock"
+                column="stock"
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSort={onSort}
+              />
 
               <TableHead className="sticky top-0 z-10 bg-background">
                 Status
@@ -148,16 +194,20 @@ export default function ProductTable({
                   <TableCell>
                     <div className="flex justify-center gap-2">
                       <Button
+                        type="button"
                         variant="outline"
                         size="icon"
+                        aria-label={`Edit ${product.name}`}
                         onClick={() => onEdit(product)}
                       >
                         <Pencil className="size-4" />
                       </Button>
 
                       <Button
+                        type="button"
                         variant="destructive"
                         size="icon"
+                        aria-label={`Delete ${product.name}`}
                         onClick={() => onDelete(product)}
                       >
                         <Trash2 className="size-4" />

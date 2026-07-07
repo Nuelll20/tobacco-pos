@@ -72,73 +72,66 @@ export default function ProductTable({
           </TableHeader>
 
           <TableBody>
-            <TableBody>
-              {products.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="h-32 text-center text-muted-foreground"
-                  >
-                    No products found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                products.map((product) => (
-                  <TableRow key={product.id}>
-                    {/* existing row */}
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.sku}</TableCell>
-
-                <TableCell>{product.name}</TableCell>
-
-                <TableCell>
-                  {formatCurrency(product.purchase_price)}
-                </TableCell>
-
-                <TableCell>
-                  {formatCurrency(product.selling_price)}
-                </TableCell>
-
-                <TableCell>{product.stock}</TableCell>
-
-                <TableCell>
-                  <Badge
-                    variant={
-                      product.is_active
-                        ? "default"
-                        : "secondary"
-                    }
-                  >
-                    {product.is_active ? "Active" : "Inactive"}
-                  </Badge>
-                </TableCell>
-
-                <TableCell>
-                  <div className="flex justify-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => onEdit(product)}
-                    >
-                      <Pencil className="size-4" />
-                    </Button>
-
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => onDelete(product)}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </div>
+            {products.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="h-32 text-center text-muted-foreground"
+                >
+                  No products found.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              products.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>{product.sku}</TableCell>
+
+                  <TableCell>{product.name}</TableCell>
+
+                  <TableCell>
+                    {formatCurrency(product.purchase_price)}
+                  </TableCell>
+
+                  <TableCell>
+                    {formatCurrency(product.selling_price)}
+                  </TableCell>
+
+                  <TableCell>{product.stock}</TableCell>
+
+                  <TableCell>
+                    <Badge
+                      variant={
+                        product.is_active
+                          ? "default"
+                          : "secondary"
+                      }
+                    >
+                      {product.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell>
+                    <div className="flex justify-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => onEdit(product)}
+                      >
+                        <Pencil className="size-4" />
+                      </Button>
+
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => onDelete(product)}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

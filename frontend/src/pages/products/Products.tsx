@@ -8,6 +8,7 @@ import DeleteProductDialog from "@/components/products/DeleteProductDialog";
 import ProductToolbar from "@/components/products/ProductToolbar";
 import ProductTable from "@/components/products/ProductTable";
 import ProductDialog from "@/components/products/ProductDialog";
+import ProductTableSkeleton from "@/components/products/ProductTableSkeleton";
 import { useDeleteProduct } from "@/hooks/useDeleteProduct";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error";
@@ -51,10 +52,6 @@ export default function Products() {
     );
   }, [data, search]);
 
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-
   if (isError) {
     return <p>Failed to load products.</p>;
   }
@@ -74,18 +71,22 @@ export default function Products() {
               }}
             />
 
-            <ProductTable
-              products={products}
-              onEdit={(product) => {
-                setSelectedProduct(product);
-                setMode("edit");
-                setOpen(true);
-              }}
-              onDelete={(product) => {
-                setProductToDelete(product);
-                setDeleteOpen(true);
-              }}
-            />
+            {isLoading ? (
+              <ProductTableSkeleton />
+            ) : (
+              <ProductTable
+                products={products}
+                onEdit={(product) => {
+                  setSelectedProduct(product);
+                  setMode("edit");
+                  setOpen(true);
+                }}
+                onDelete={(product) => {
+                  setProductToDelete(product);
+                  setDeleteOpen(true);
+                }}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

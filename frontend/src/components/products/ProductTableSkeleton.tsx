@@ -12,8 +12,8 @@ import {
 export default function ProductTableSkeleton() {
   return (
     <div className="min-h-0 flex-1 rounded-md border">
-      <div className="h-full overflow-y-auto">
-        <Table>
+      <div className="h-full overflow-auto">
+        <Table className="min-w-[900px]">
           <TableHeader>
             <TableRow>
               <TableHead className="sticky top-0 z-10 bg-background">

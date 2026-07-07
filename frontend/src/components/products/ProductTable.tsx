@@ -12,10 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 type Props = {
   products: Product[];
@@ -37,8 +34,8 @@ export default function ProductTable({
 }: Props) {
   return (
     <div className="min-h-0 flex-1 rounded-md border">
-      <div className="h-full overflow-y-auto">
-        <Table>
+      <div className="h-full overflow-auto">
+        <Table className="min-w-[900px]">
           <TableHeader>
             <TableRow>
               <TableHead className="sticky top-0 z-10 bg-background">
@@ -86,7 +83,9 @@ export default function ProductTable({
                 <TableRow key={product.id}>
                   <TableCell>{product.sku}</TableCell>
 
-                  <TableCell>{product.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {product.name}
+                  </TableCell>
 
                   <TableCell>
                     {formatCurrency(product.purchase_price)}
@@ -101,9 +100,7 @@ export default function ProductTable({
                   <TableCell>
                     <Badge
                       variant={
-                        product.is_active
-                          ? "default"
-                          : "secondary"
+                        product.is_active ? "default" : "secondary"
                       }
                     >
                       {product.is_active ? "Active" : "Inactive"}

@@ -7,10 +7,10 @@ export default function AppLayout() {
     <div className="flex h-screen bg-muted/30">
       <Sidebar />
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <Header />
 
-        <main className="flex-1 p-6">
+        <main className="min-h-0 flex-1 overflow-hidden p-6">
           <Outlet />
         </main>
       </div>

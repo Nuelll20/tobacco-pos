@@ -61,32 +61,34 @@ export default function Products() {
 
   return (
     <>
-      <Card>
-        <CardContent className="space-y-6">
-          <ProductToolbar
-            search={search}
-            onSearchChange={setSearch}
-            onAddProduct={() => {
-              setMode("create");
-              setSelectedProduct(null);
-              setOpen(true);
-            }}
-          />
+      <div className="flex h-full min-h-0 flex-col">
+        <Card className="flex min-h-0 flex-1 flex-col">
+          <CardContent className="flex min-h-0 flex-1 flex-col gap-6 p-6">
+            <ProductToolbar
+              search={search}
+              onSearchChange={setSearch}
+              onAddProduct={() => {
+                setMode("create");
+                setSelectedProduct(null);
+                setOpen(true);
+              }}
+            />
 
-          <ProductTable
-            products={products}
-            onEdit={(product) => {
-              setSelectedProduct(product);
-              setMode("edit");
-              setOpen(true);
-            }}
-            onDelete={(product) => {
-              setProductToDelete(product);
-              setDeleteOpen(true);
-            }}
-          />
-        </CardContent>
-      </Card>
+            <ProductTable
+              products={products}
+              onEdit={(product) => {
+                setSelectedProduct(product);
+                setMode("edit");
+                setOpen(true);
+              }}
+              onDelete={(product) => {
+                setProductToDelete(product);
+                setDeleteOpen(true);
+              }}
+            />
+          </CardContent>
+        </Card>
+      </div>
 
       <ProductDialog
         open={open}

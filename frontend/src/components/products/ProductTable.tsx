@@ -36,74 +36,112 @@ export default function ProductTable({
   onDelete,
 }: Props) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>SKU</TableHead>
-          <TableHead>Product</TableHead>
-          <TableHead>Purchase</TableHead>
-          <TableHead>Selling</TableHead>
-          <TableHead>Stock</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="w-36 text-center">
-            Actions
-          </TableHead>
-        </TableRow>
-      </TableHeader>
+    <div className="min-h-0 flex-1 rounded-md border">
+      <div className="h-full overflow-y-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="sticky top-0 z-10 bg-background">
+                SKU
+              </TableHead>
 
-      <TableBody>
-        {products.map((product) => (
-          <TableRow key={product.id}>
-            <TableCell>{product.sku}</TableCell>
+              <TableHead className="sticky top-0 z-10 bg-background">
+                Product
+              </TableHead>
 
-            <TableCell>{product.name}</TableCell>
+              <TableHead className="sticky top-0 z-10 bg-background">
+                Purchase
+              </TableHead>
 
-            <TableCell>
-              {formatCurrency(product.purchase_price)}
-            </TableCell>
+              <TableHead className="sticky top-0 z-10 bg-background">
+                Selling
+              </TableHead>
 
-            <TableCell>
-              {formatCurrency(product.selling_price)}
-            </TableCell>
+              <TableHead className="sticky top-0 z-10 bg-background">
+                Stock
+              </TableHead>
 
-            <TableCell>{product.stock}</TableCell>
+              <TableHead className="sticky top-0 z-10 bg-background">
+                Status
+              </TableHead>
 
-            <TableCell>
-              <Badge
-                variant={
-                  product.is_active
-                    ? "default"
-                    : "secondary"
-                }
-              >
-                {product.is_active
-                  ? "Active"
-                  : "Inactive"}
-              </Badge>
-            </TableCell>
+              <TableHead className="sticky top-0 z-10 w-36 bg-background text-center">
+                Actions
+              </TableHead>
+            </TableRow>
+          </TableHeader>
 
-            <TableCell>
-              <div className="flex justify-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => onEdit(product)}
-                >
-                  <Pencil className="size-4" />
-                </Button>
+          <TableBody>
+            <TableBody>
+              {products.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="h-32 text-center text-muted-foreground"
+                  >
+                    No products found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                products.map((product) => (
+                  <TableRow key={product.id}>
+                    {/* existing row */}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+            {products.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell>{product.sku}</TableCell>
 
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => onDelete(product)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                <TableCell>{product.name}</TableCell>
+
+                <TableCell>
+                  {formatCurrency(product.purchase_price)}
+                </TableCell>
+
+                <TableCell>
+                  {formatCurrency(product.selling_price)}
+                </TableCell>
+
+                <TableCell>{product.stock}</TableCell>
+
+                <TableCell>
+                  <Badge
+                    variant={
+                      product.is_active
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
+                    {product.is_active ? "Active" : "Inactive"}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => onEdit(product)}
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => onDelete(product)}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 }

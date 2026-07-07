@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rule;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProductResource;
@@ -18,10 +19,22 @@ class ProductController extends Controller
         $validated = $request->validate([
             'search' => ['nullable', 'string', 'max:255'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'sort_by' => [
+                'nullable',
+                'string',
+                Rule::in(['name', 'sku', 'stock']),
+            ],
+            'sort_direction' => [
+                'nullable',
+                'string',
+                Rule::in(['asc', 'desc']),
+            ],
         ]);
 
         $search = $validated['search'] ?? null;
         $perPage = $validated['per_page'] ?? 10;
+        $sortBy = $validated['sort_by'] ?? 'created_at';
+        $sortDirection = $validated['sort_direction'] ?? 'desc';
 
         $products = Product::query()
             ->when($search, function ($query, $search) {
@@ -31,7 +44,7 @@ class ProductController extends Controller
                         ->orWhere('sku', 'like', "%{$search}%");
                 });
             })
-            ->latest()
+            ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage)
             ->withQueryString();
 

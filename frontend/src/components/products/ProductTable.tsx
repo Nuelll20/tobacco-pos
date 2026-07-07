@@ -1,4 +1,8 @@
-import type { Product } from "@/types/product";
+import type {
+  Product,
+  ProductSortBy,
+  SortDirection,
+} from "@/types/product";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +20,9 @@ import { Pencil, Trash2 } from "lucide-react";
 
 type Props = {
   products: Product[];
+  sortBy?: ProductSortBy;
+  sortDirection?: SortDirection;
+  onSort: (column: ProductSortBy) => void;
   onEdit: (product: Product) => void;
   onDelete: (product: Product) => void;
 };
@@ -27,8 +34,21 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
+
+const getSortLabel = (
+  column: ProductSortBy,
+  sortBy?: ProductSortBy,
+  sortDirection?: SortDirection
+) => {
+  if (sortBy !== column) return "";
+
+  return sortDirection === "asc" ? " ↑" : " ↓";
+};
 export default function ProductTable({
   products,
+  sortBy,
+  sortDirection,
+  onSort,
   onEdit,
   onDelete,
 }: Props) {
@@ -39,11 +59,23 @@ export default function ProductTable({
           <TableHeader>
             <TableRow>
               <TableHead className="sticky top-0 z-10 bg-background">
-                SKU
+                <button
+                  type="button"
+                  className="font-medium hover:text-foreground"
+                  onClick={() => onSort("sku")}
+                >
+                  SKU{getSortLabel("sku", sortBy, sortDirection)}
+                </button>
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">
-                Product
+                <button
+                  type="button"
+                  className="font-medium hover:text-foreground"
+                  onClick={() => onSort("name")}
+                >
+                  Product{getSortLabel("name", sortBy, sortDirection)}
+                </button>
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">
@@ -55,7 +87,13 @@ export default function ProductTable({
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">
-                Stock
+                <button
+                  type="button"
+                  className="font-medium hover:text-foreground"
+                  onClick={() => onSort("stock")}
+                >
+                  Stock{getSortLabel("stock", sortBy, sortDirection)}
+                </button>
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">

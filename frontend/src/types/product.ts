@@ -41,4 +41,9 @@ export interface ProductQueryParams {
   page?: number;
   per_page?: number;
   search?: string;
+  sort_by?: ProductSortBy;
+  sort_direction?: SortDirection;
 }
+
+export type ProductSortBy = "name" | "sku" | "stock";
+export type SortDirection = "asc" | "desc";

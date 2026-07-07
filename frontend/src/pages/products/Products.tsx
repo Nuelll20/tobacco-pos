@@ -3,7 +3,11 @@ import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
 import { useDeleteProduct } from "@/hooks/useDeleteProduct";
 
-import type { Product } from "@/types/product";
+import type {
+  Product,
+  ProductSortBy,
+  SortDirection,
+} from "@/types/product";
 
 import DeleteProductDialog from "@/components/products/DeleteProductDialog";
 import ProductToolbar from "@/components/products/ProductToolbar";
@@ -26,6 +30,10 @@ export default function Products() {
 
   const [search, setSearch] = useState("");
 
+  const [sortBy, setSortBy] = useState<ProductSortBy>("name");
+  const [sortDirection, setSortDirection] =
+    useState<SortDirection>("asc");
+
   const [open, setOpen] = useState(false);
 
   const [selectedProduct, setSelectedProduct] =
@@ -43,9 +51,24 @@ export default function Products() {
     page,
     per_page: perPage,
     search: search || undefined,
+    sort_by: sortBy,
+    sort_direction: sortDirection,
   });
 
   const deleteProductMutation = useDeleteProduct();
+
+  const handleSort = (column: ProductSortBy) => {
+    if (sortBy === column) {
+      setSortDirection((current) =>
+        current === "asc" ? "desc" : "asc"
+      );
+    } else {
+      setSortBy(column);
+      setSortDirection("asc");
+    }
+
+    setPage(1);
+  };
 
   if (isError) {
     return <p>Failed to load products.</p>;
@@ -75,6 +98,9 @@ export default function Products() {
               <>
                 <ProductTable
                   products={data?.data ?? []}
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
                   onEdit={(product) => {
                     setSelectedProduct(product);
                     setMode("edit");

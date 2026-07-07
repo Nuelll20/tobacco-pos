@@ -36,3 +36,8 @@ export interface ProductPayload {
   minimum_stock: number;
   is_active: boolean;
 }
+
+export interface ProductQueryParams {
+  page?: number;
+  per_page?: number;
+}

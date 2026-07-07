@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { useProducts } from "@/hooks/useProducts";
+import { useDeleteProduct } from "@/hooks/useDeleteProduct";
 
 import type { Product } from "@/types/product";
 
@@ -9,7 +10,8 @@ import ProductToolbar from "@/components/products/ProductToolbar";
 import ProductTable from "@/components/products/ProductTable";
 import ProductDialog from "@/components/products/ProductDialog";
 import ProductTableSkeleton from "@/components/products/ProductTableSkeleton";
-import { useDeleteProduct } from "@/hooks/useDeleteProduct";
+import ProductPagination from "@/components/products/ProductPagination";
+
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error";
 
@@ -19,7 +21,8 @@ import {
 } from "@/components/ui/card";
 
 export default function Products() {
-  const { data, isLoading, isError } = useProducts();
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
   const [search, setSearch] = useState("");
 
@@ -35,6 +38,11 @@ export default function Products() {
 
   const [productToDelete, setProductToDelete] =
     useState<Product | null>(null);
+
+  const { data, isLoading, isError } = useProducts({
+    page,
+    per_page: perPage,
+  });
 
   const deleteProductMutation = useDeleteProduct();
 
@@ -63,7 +71,10 @@ export default function Products() {
           <CardContent className="flex min-h-0 flex-1 flex-col gap-6 p-4 sm:p-6">
             <ProductToolbar
               search={search}
-              onSearchChange={setSearch}
+              onSearchChange={(value) => {
+                setSearch(value);
+                setPage(1);
+              }}
               onAddProduct={() => {
                 setMode("create");
                 setSelectedProduct(null);
@@ -74,18 +85,30 @@ export default function Products() {
             {isLoading ? (
               <ProductTableSkeleton />
             ) : (
-              <ProductTable
-                products={products}
-                onEdit={(product) => {
-                  setSelectedProduct(product);
-                  setMode("edit");
-                  setOpen(true);
-                }}
-                onDelete={(product) => {
-                  setProductToDelete(product);
-                  setDeleteOpen(true);
-                }}
-              />
+              <>
+                <ProductTable
+                  products={products}
+                  onEdit={(product) => {
+                    setSelectedProduct(product);
+                    setMode("edit");
+                    setOpen(true);
+                  }}
+                  onDelete={(product) => {
+                    setProductToDelete(product);
+                    setDeleteOpen(true);
+                  }}
+                />
+
+                {data?.meta && (
+                  <ProductPagination
+                    currentPage={data.meta.current_page}
+                    lastPage={data.meta.last_page}
+                    total={data.meta.total}
+                    perPage={data.meta.per_page}
+                    onPageChange={setPage}
+                  />
+                )}
+              </>
             )}
           </CardContent>
         </Card>

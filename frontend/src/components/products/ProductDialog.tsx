@@ -1,45 +1,51 @@
-import { useState } from "react";
-
 import ProductForm from "@/components/products/ProductForm";
+import type { Product } from "@/types/product";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
-export default function ProductDialog() {
-  const [open, setOpen] = useState(false);
+type ProductDialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  mode: "create" | "edit";
+  product: Product | null;
+};
 
+export default function ProductDialog({
+  open,
+  onOpenChange,
+  mode,
+  product,
+}: ProductDialogProps) {
   return (
     <Dialog
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
     >
-      <DialogTrigger asChild>
-        <Button>
-          + Add Product
-        </Button>
-      </DialogTrigger>
-
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            Add Product
+            {mode === "create"
+              ? "Add Product"
+              : "Edit Product"}
           </DialogTitle>
 
           <DialogDescription>
-            Fill in the information below to create a new product.
+            {mode === "create"
+              ? "Fill in the information below to create a new product."
+              : "Update the information of this product."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-6">
           <ProductForm
-            onSuccess={() => setOpen(false)}
+            product={product}
+            onSuccess={() => onOpenChange(false)}
           />
         </div>
       </DialogContent>

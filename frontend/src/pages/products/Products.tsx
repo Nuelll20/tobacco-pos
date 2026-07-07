@@ -1,20 +1,30 @@
 import { useMemo, useState } from "react";
 
 import { useProducts } from "@/hooks/useProducts";
+
+import type { Product } from "@/types/product";
+
 import ProductToolbar from "@/components/products/ProductToolbar";
 import ProductTable from "@/components/products/ProductTable";
+import ProductDialog from "@/components/products/ProductDialog";
 
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 
 export default function Products() {
   const { data, isLoading, isError } = useProducts();
 
   const [search, setSearch] = useState("");
+
+  const [open, setOpen] = useState(false);
+
+  const [selectedProduct, setSelectedProduct] =
+    useState<Product | null>(null);
+
+  const [mode, setMode] =
+    useState<"create" | "edit">("create");
 
   const products = useMemo(() => {
     const items = data?.data ?? [];
@@ -39,21 +49,36 @@ export default function Products() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Products</CardTitle>
-      </CardHeader>
+    <>
+      <Card>
+        <CardContent className="space-y-6">
+          <ProductToolbar
+            search={search}
+            onSearchChange={setSearch}
+            onAddProduct={() => {
+              setMode("create");
+              setSelectedProduct(null);
+              setOpen(true);
+            }}
+          />
 
-      <CardContent className="space-y-6">
-        <ProductToolbar
-          search={search}
-          onSearchChange={setSearch}
-        />
+          <ProductTable
+            products={products}
+            onEdit={(product) => {
+              setSelectedProduct(product);
+              setMode("edit");
+              setOpen(true);
+            }}
+          />
+        </CardContent>
+      </Card>
 
-        <ProductTable
-          products={products}
-        />
-      </CardContent>
-    </Card>
+      <ProductDialog
+        open={open}
+        onOpenChange={setOpen}
+        mode={mode}
+        product={selectedProduct}
+      />
+    </>
   );
 }

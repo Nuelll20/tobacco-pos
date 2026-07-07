@@ -1,14 +1,16 @@
-import ProductDialog from "@/components/products/ProductDialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type Props = {
   search: string;
   onSearchChange: (value: string) => void;
+  onAddProduct: () => void;
 };
 
 export default function ProductToolbar({
   search,
   onSearchChange,
+  onAddProduct,
 }: Props) {
   return (
     <div className="flex items-center justify-between gap-4">
@@ -18,7 +20,10 @@ export default function ProductToolbar({
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
       />
-      <ProductDialog />
+
+      <Button onClick={onAddProduct}>
+        + Add Product
+      </Button>
     </div>
   );
 }

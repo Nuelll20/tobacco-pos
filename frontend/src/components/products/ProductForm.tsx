@@ -1,5 +1,9 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+
+import type { Product } from "@/types/product";
 
 import {
   productSchema,
@@ -7,19 +11,21 @@ import {
 } from "@/schemas/product";
 
 import { getErrorMessage } from "@/lib/error";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+
+import { useUpdateProduct } from "@/hooks/useUpdateProduct";
+
 import { useCreateProduct } from "@/hooks/useCreateProduct";
 
+import { Button } from "@/components/ui/button";
+import ProductFormFields from "@/components/products/ProductFormFields";
 
 type ProductFormProps = {
+  product?: Product | null;
   onSuccess?: () => void;
 };
 
 export default function ProductForm({
+  product,
   onSuccess,
 }: ProductFormProps) {
   const {
@@ -42,14 +48,53 @@ export default function ProductForm({
       is_active: true,
     },
   });
-  const createProductMutation = useCreateProduct();
 
-  const isActive = watch("is_active");
+  const createProductMutation = useCreateProduct();
+  const updateProductMutation = useUpdateProduct();
+
+  useEffect(() => {
+    if (product) {
+      reset({
+        sku: product.sku,
+        name: product.name,
+        purchase_price: product.purchase_price,
+        selling_price: product.selling_price,
+        stock: product.stock,
+        minimum_stock: product.minimum_stock,
+        is_active: product.is_active,
+      });
+    } else {
+      reset({
+        sku: "",
+        name: "",
+        purchase_price: 0,
+        selling_price: 0,
+        stock: 0,
+        minimum_stock: 0,
+        is_active: true,
+      });
+    }
+  }, [product, reset]);
 
   const onSubmit = (data: ProductFormData) => {
-    createProductMutation.mutate(data, {
+    const mutation = product
+      ? updateProductMutation
+      : createProductMutation;
+
+    const payload = product
+      ? {
+        id: product.id,
+        payload: data,
+      }
+      : data;
+
+    mutation.mutate(payload as never, {
       onSuccess: () => {
-        toast.success("Product created successfully");
+        toast.success(
+          product
+            ? "Product updated successfully."
+            : "Product created successfully."
+        );
 
         reset();
 
@@ -65,135 +110,14 @@ export default function ProductForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-5"
+      className="space-y-6"
     >
-      {/* SKU */}
-      <div className="space-y-2">
-        <Label htmlFor="sku">SKU</Label>
-
-        <Input
-          id="sku"
-          placeholder="SKU001"
-          {...register("sku")}
-        />
-
-        {errors.sku && (
-          <p className="text-sm text-destructive">
-            {errors.sku.message}
-          </p>
-        )}
-      </div>
-
-      {/* Product Name */}
-      <div className="space-y-2">
-        <Label htmlFor="name">Product Name</Label>
-
-        <Input
-          id="name"
-          placeholder="Gudang Garam Merah"
-          {...register("name")}
-        />
-
-        {errors.name && (
-          <p className="text-sm text-destructive">
-            {errors.name.message}
-          </p>
-        )}
-      </div>
-
-      {/* Purchase Price */}
-      <div className="space-y-2">
-        <Label htmlFor="purchase_price">
-          Purchase Price
-        </Label>
-
-        <Input
-          id="purchase_price"
-          type="number"
-          {...register("purchase_price", {
-            valueAsNumber: true,
-          })}
-        />
-
-        {errors.purchase_price && (
-          <p className="text-sm text-destructive">
-            {errors.purchase_price.message}
-          </p>
-        )}
-      </div>
-
-      {/* Selling Price */}
-      <div className="space-y-2">
-        <Label htmlFor="selling_price">
-          Selling Price
-        </Label>
-
-        <Input
-          id="selling_price"
-          type="number"
-          {...register("selling_price", {
-            valueAsNumber: true,
-          })}
-        />
-
-        {errors.selling_price && (
-          <p className="text-sm text-destructive">
-            {errors.selling_price.message}
-          </p>
-        )}
-      </div>
-
-      {/* Stock */}
-      <div className="space-y-2">
-        <Label htmlFor="stock">Stock</Label>
-
-        <Input
-          id="stock"
-          type="number"
-          {...register("stock", {
-            valueAsNumber: true,
-          })}
-        />
-
-        {errors.stock && (
-          <p className="text-sm text-destructive">
-            {errors.stock.message}
-          </p>
-        )}
-      </div>
-
-      {/* Minimum Stock */}
-      <div className="space-y-2">
-        <Label htmlFor="minimum_stock">
-          Minimum Stock
-        </Label>
-
-        <Input
-          id="minimum_stock"
-          type="number"
-          {...register("minimum_stock", {
-            valueAsNumber: true,
-          })}
-        />
-
-        {errors.minimum_stock && (
-          <p className="text-sm text-destructive">
-            {errors.minimum_stock.message}
-          </p>
-        )}
-      </div>
-
-      {/* Active */}
-      <div className="flex items-center gap-3">
-        <Checkbox
-          checked={isActive}
-          onCheckedChange={(checked) =>
-            setValue("is_active", checked === true)
-          }
-        />
-
-        <Label>Active</Label>
-      </div>
+      <ProductFormFields
+        register={register}
+        errors={errors}
+        watch={watch}
+        setValue={setValue}
+      />
 
       <Button
         type="submit"

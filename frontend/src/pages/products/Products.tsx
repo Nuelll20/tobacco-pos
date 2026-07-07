@@ -4,9 +4,13 @@ import { useProducts } from "@/hooks/useProducts";
 
 import type { Product } from "@/types/product";
 
+import DeleteProductDialog from "@/components/products/DeleteProductDialog";
 import ProductToolbar from "@/components/products/ProductToolbar";
 import ProductTable from "@/components/products/ProductTable";
 import ProductDialog from "@/components/products/ProductDialog";
+import { useDeleteProduct } from "@/hooks/useDeleteProduct";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/error";
 
 import {
   Card,
@@ -25,6 +29,13 @@ export default function Products() {
 
   const [mode, setMode] =
     useState<"create" | "edit">("create");
+
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const [productToDelete, setProductToDelete] =
+    useState<Product | null>(null);
+
+  const deleteProductMutation = useDeleteProduct();
 
   const products = useMemo(() => {
     const items = data?.data ?? [];
@@ -69,6 +80,10 @@ export default function Products() {
               setMode("edit");
               setOpen(true);
             }}
+            onDelete={(product) => {
+              setProductToDelete(product);
+              setDeleteOpen(true);
+            }}
           />
         </CardContent>
       </Card>
@@ -78,6 +93,29 @@ export default function Products() {
         onOpenChange={setOpen}
         mode={mode}
         product={selectedProduct}
+      />
+
+      <DeleteProductDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        product={productToDelete}
+        loading={deleteProductMutation.isPending}
+        onConfirm={() => {
+          if (!productToDelete) return;
+
+          deleteProductMutation.mutate(productToDelete.id, {
+            onSuccess: () => {
+              toast.success("Product deleted successfully.");
+
+              setDeleteOpen(false);
+              setProductToDelete(null);
+            },
+
+            onError: (error) => {
+              toast.error(getErrorMessage(error));
+            },
+          });
+        }}
       />
     </>
   );

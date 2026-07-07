@@ -1,5 +1,3 @@
-import { Pencil } from "lucide-react";
-
 import type { Product } from "@/types/product";
 
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +12,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import {
+  Pencil,
+  Trash2,
+} from "lucide-react";
+
 type Props = {
   products: Product[];
   onEdit: (product: Product) => void;
+  onDelete: (product: Product) => void;
 };
 
 const formatCurrency = (value: number) =>
@@ -29,6 +33,7 @@ const formatCurrency = (value: number) =>
 export default function ProductTable({
   products,
   onEdit,
+  onDelete,
 }: Props) {
   return (
     <Table>
@@ -40,7 +45,7 @@ export default function ProductTable({
           <TableHead>Selling</TableHead>
           <TableHead>Stock</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead className="w-28 text-center">
+          <TableHead className="w-36 text-center">
             Actions
           </TableHead>
         </TableRow>
@@ -78,13 +83,21 @@ export default function ProductTable({
             </TableCell>
 
             <TableCell>
-              <div className="flex justify-center">
+              <div className="flex justify-center gap-2">
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => onEdit(product)}
                 >
                   <Pencil className="size-4" />
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => onDelete(product)}
+                >
+                  <Trash2 className="size-4" />
                 </Button>
               </div>
             </TableCell>

@@ -26,7 +26,7 @@ import {
 
 export default function Products() {
   const [page, setPage] = useState(1);
-  const perPage = 10;
+  const [perPage, setPerPage] = useState(10);
 
   const [search, setSearch] = useState("");
 
@@ -119,6 +119,10 @@ export default function Products() {
                     total={data.meta.total}
                     perPage={data.meta.per_page}
                     onPageChange={setPage}
+                    onPerPageChange={(value) => {
+                      setPerPage(value);
+                      setPage(1);
+                    }}
                   />
                 )}
               </>

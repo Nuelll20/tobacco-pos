@@ -1,5 +1,9 @@
 import type { Product } from "@/types/product";
 
+import { Loader2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,50 +19,58 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   product: Product | null;
-  onConfirm: () => void;
   loading?: boolean;
+  onConfirm: () => void;
 };
 
 export default function DeleteProductDialog({
   open,
   onOpenChange,
   product,
-  onConfirm,
   loading = false,
+  onConfirm,
 }: Props) {
   return (
     <AlertDialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(value) => {
+        if (loading) return;
+
+        onOpenChange(value);
+      }}
     >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Delete Product
+            Delete product?
           </AlertDialogTitle>
 
           <AlertDialogDescription>
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-foreground">
-              {product?.name}
+            <span className="font-medium text-foreground">
+              {product?.name ?? "this product"}
             </span>
-            ?
-            <br />
-            <br />
-            This action cannot be undone.
+            ? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>
+          <AlertDialogCancel disabled={loading}>
             Cancel
           </AlertDialogCancel>
 
-          <AlertDialogAction
-            onClick={onConfirm}
-            disabled={loading}
-          >
-            {loading ? "Deleting..." : "Delete"}
+          <AlertDialogAction asChild>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={loading || !product}
+              onClick={onConfirm}
+            >
+              {loading && (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              )}
+              Delete
+            </Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

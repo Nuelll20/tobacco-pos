@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { useProducts } from "@/hooks/useProducts";
 import { useDeleteProduct } from "@/hooks/useDeleteProduct";
@@ -42,23 +42,10 @@ export default function Products() {
   const { data, isLoading, isError } = useProducts({
     page,
     per_page: perPage,
+    search: search || undefined,
   });
 
   const deleteProductMutation = useDeleteProduct();
-
-  const products = useMemo(() => {
-    const items = data?.data ?? [];
-
-    return items.filter(
-      (product) =>
-        product.name
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        product.sku
-          .toLowerCase()
-          .includes(search.toLowerCase())
-    );
-  }, [data, search]);
 
   if (isError) {
     return <p>Failed to load products.</p>;
@@ -87,7 +74,7 @@ export default function Products() {
             ) : (
               <>
                 <ProductTable
-                  products={products}
+                  products={data?.data ?? []}
                   onEdit={(product) => {
                     setSelectedProduct(product);
                     setMode("edit");

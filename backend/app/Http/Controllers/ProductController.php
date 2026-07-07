@@ -13,9 +13,27 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->paginate(10);
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:255'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $search = $validated['search'] ?? null;
+        $perPage = $validated['per_page'] ?? 10;
+
+        $products = Product::query()
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
 
         return ProductResource::collection($products);
     }

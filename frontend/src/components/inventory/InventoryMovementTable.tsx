@@ -117,11 +117,17 @@ export default function InventoryMovementTable({
                                         {movement.stock_after}
                                     </TableCell>
 
-                                    <TableCell>
+                                    <TableCell
+                                        className="max-w-[180px] truncate"
+                                        title={movement.reference_no || undefined}
+                                    >
                                         {movement.reference_no || "-"}
                                     </TableCell>
 
-                                    <TableCell className="max-w-[220px] truncate">
+                                    <TableCell
+                                        className="max-w-[220px] truncate"
+                                        title={movement.note || undefined}
+                                    >
                                         {movement.note || "-"}
                                     </TableCell>
                                 </TableRow>

@@ -48,7 +48,17 @@ export default function Inventory() {
     sort_direction: "asc",
   });
 
+  const hasActiveFilters =
+    search !== "" || type !== "all" || productId !== "all";
+
+  const handleResetFilters = () => {
+    setSearch("");
+    setType("all");
+    setProductId("all");
+    setPage(1);
+  };
   return (
+
     <>
       <div className="flex h-full min-h-0 flex-col">
         <Card className="flex min-h-0 flex-1 flex-col">
@@ -59,6 +69,7 @@ export default function Inventory() {
               productId={productId}
               products={productsData?.data ?? []}
               isProductsLoading={isProductsLoading}
+              hasActiveFilters={hasActiveFilters}
               onSearchChange={(value) => {
                 setSearch(value);
                 setPage(1);
@@ -71,6 +82,7 @@ export default function Inventory() {
                 setProductId(value);
                 setPage(1);
               }}
+              onResetFilters={handleResetFilters}
               onAddMovement={() => setOpen(true)}
             />
 

@@ -1,17 +1,23 @@
 import { Plus } from "lucide-react";
 
+import type { InventoryMovementType } from "@/types/inventory";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface InventoryToolbarProps {
   search: string;
+  type: InventoryMovementType | "all";
   onSearchChange: (value: string) => void;
+  onTypeChange: (value: InventoryMovementType | "all") => void;
   onAddMovement: () => void;
 }
 
 export default function InventoryToolbar({
   search,
+  type,
   onSearchChange,
+  onTypeChange,
   onAddMovement,
 }: InventoryToolbarProps) {
   return (
@@ -33,6 +39,21 @@ export default function InventoryToolbar({
           placeholder="Search product, SKU, or reference..."
           className="w-full sm:w-80"
         />
+
+        <select
+          value={type}
+          onChange={(event) =>
+            onTypeChange(
+              event.target.value as InventoryMovementType | "all"
+            )
+          }
+          className="h-10 rounded-md border bg-background px-3 text-sm"
+        >
+          <option value="all">All Types</option>
+          <option value="stock_in">Stock In</option>
+          <option value="stock_out">Stock Out</option>
+          <option value="adjustment">Adjustment</option>
+        </select>
 
         <Button
           type="button"

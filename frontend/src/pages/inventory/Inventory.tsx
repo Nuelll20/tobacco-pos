@@ -8,6 +8,7 @@ import InventoryMovementTableSkeleton from "@/components/inventory/InventoryMove
 import InventoryPagination from "@/components/inventory/InventoryPagination";
 import InventoryErrorState from "@/components/inventory/InventoryErrorState";
 import InventoryMovementDialog from "@/components/inventory/InventoryMovementDialog";
+import type { InventoryMovementType } from "@/types/inventory";
 
 import {
   Card,
@@ -18,6 +19,8 @@ export default function Inventory() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState("");
+  const [type, setType] =
+    useState<InventoryMovementType | "all">("all");
   const [open, setOpen] = useState(false);
 
   const {
@@ -29,6 +32,7 @@ export default function Inventory() {
     page,
     per_page: perPage,
     search: search || undefined,
+    type: type === "all" ? undefined : type,
   });
 
   return (
@@ -38,8 +42,13 @@ export default function Inventory() {
           <CardContent className="flex min-h-0 flex-1 flex-col gap-6 p-4 sm:p-6">
             <InventoryToolbar
               search={search}
+              type={type}
               onSearchChange={(value) => {
                 setSearch(value);
+                setPage(1);
+              }}
+              onTypeChange={(value) => {
+                setType(value);
                 setPage(1);
               }}
               onAddMovement={() => setOpen(true)}

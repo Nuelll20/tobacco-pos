@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 
 import type { InventoryMovementType } from "@/types/inventory";
+import type { Product } from "@/types/product";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,16 +9,24 @@ import { Input } from "@/components/ui/input";
 interface InventoryToolbarProps {
   search: string;
   type: InventoryMovementType | "all";
+  productId: number | "all";
+  products: Product[];
+  isProductsLoading: boolean;
   onSearchChange: (value: string) => void;
   onTypeChange: (value: InventoryMovementType | "all") => void;
+  onProductChange: (value: number | "all") => void;
   onAddMovement: () => void;
 }
 
 export default function InventoryToolbar({
   search,
   type,
+  productId,
+  products,
+  isProductsLoading,
   onSearchChange,
   onTypeChange,
+  onProductChange,
   onAddMovement,
 }: InventoryToolbarProps) {
   return (
@@ -39,6 +48,34 @@ export default function InventoryToolbar({
           placeholder="Search product, SKU, or reference..."
           className="w-full sm:w-80"
         />
+
+        <select
+          value={productId}
+          onChange={(event) => {
+            const value = event.target.value;
+
+            onProductChange(
+              value === "all" ? "all" : Number(value)
+            );
+          }}
+          className="h-10 rounded-md border bg-background px-3 text-sm"
+          disabled={isProductsLoading}
+        >
+          <option value="all">
+            {isProductsLoading
+              ? "Loading products..."
+              : "All Products"}
+          </option>
+
+          {products.map((product) => (
+            <option
+              key={product.id}
+              value={product.id}
+            >
+              {product.name} — {product.sku}
+            </option>
+          ))}
+        </select>
 
         <select
           value={type}

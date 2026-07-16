@@ -1,13 +1,160 @@
-export default function Dashboard() {
-  return (
-    <div>
-      <h1 className="text-3xl font-bold">
-        Dashboard
-      </h1>
+import { useState } from "react";
+import { AlertCircle } from "lucide-react";
 
-      <p className="mt-2 text-muted-foreground">
-        Selamat datang di Tobacco POS.
-      </p>
+import DashboardLowStockProducts from "@/components/dashboard/DashboardLowStockProducts";
+import DashboardPaymentMethods from "@/components/dashboard/DashboardPaymentMethods";
+import DashboardPeriodFilter from "@/components/dashboard/DashboardPeriodFilter";
+import DashboardRecentTransactions from "@/components/dashboard/DashboardRecentTransactions";
+import DashboardSalesChart from "@/components/dashboard/DashboardSalesChart";
+import DashboardSkeleton from "@/components/dashboard/DashboardSkeleton";
+import DashboardSummaryCards from "@/components/dashboard/DashboardSummaryCards";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import { useDashboardSummary } from "@/hooks/useDashboardSummary";
+
+import type {
+  DashboardPeriod,
+  DashboardSummaryParams,
+} from "@/types/dashboard";
+
+export default function Dashboard() {
+  const [period, setPeriod] =
+    useState<DashboardPeriod>("today");
+
+  const [startDate, setStartDate] =
+    useState("");
+
+  const [endDate, setEndDate] =
+    useState("");
+
+  const [queryParams, setQueryParams] =
+    useState<DashboardSummaryParams>({
+      period: "today",
+    });
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+  } = useDashboardSummary(queryParams);
+
+  const dashboard = data?.data;
+
+  function handlePeriodChange(
+    nextPeriod: DashboardPeriod
+  ) {
+    setPeriod(nextPeriod);
+
+    if (nextPeriod !== "custom") {
+      setQueryParams({
+        period: nextPeriod,
+      });
+    }
+  }
+
+  function handleApplyCustomPeriod() {
+    if (
+      !startDate ||
+      !endDate ||
+      endDate < startDate
+    ) {
+      return;
+    }
+
+    setQueryParams({
+      period: "custom",
+      start_date: startDate,
+      end_date: endDate,
+    });
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">
+          Dashboard
+        </h1>
+
+        <p className="mt-2 text-muted-foreground">
+          Monitor sales performance and inventory status.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <DashboardSkeleton />
+      ) : isError || !dashboard ? (
+        <Card>
+          <CardContent className="flex min-h-72 flex-col items-center justify-center px-6 text-center">
+            <AlertCircle className="mb-4 size-10 text-destructive" />
+
+            <h2 className="text-lg font-semibold">
+              Failed to load dashboard
+            </h2>
+
+            <p className="mt-2 max-w-md text-sm text-muted-foreground">
+              The dashboard data could not be loaded. Check the connection and try again.
+            </p>
+
+            <Button
+              type="button"
+              className="mt-5"
+              onClick={() => {
+                void refetch();
+              }}
+            >
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <DashboardPeriodFilter
+            period={period}
+            startDate={startDate}
+            endDate={endDate}
+            isLoading={isFetching}
+            onPeriodChange={handlePeriodChange}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+            onApplyCustomPeriod={
+              handleApplyCustomPeriod
+            }
+          />
+
+          <DashboardSummaryCards
+            summary={dashboard.summary}
+          />
+
+          <div className="grid gap-6 xl:grid-cols-3">
+            <div className="min-w-0 xl:col-span-2">
+              <DashboardSalesChart
+                data={dashboard.daily_sales}
+              />
+            </div>
+
+            <DashboardPaymentMethods
+              data={dashboard.payment_methods}
+            />
+          </div>
+
+          <div className="grid gap-6 xl:grid-cols-3">
+            <div className="min-w-0 xl:col-span-2">
+              <DashboardRecentTransactions
+                data={dashboard.recent_transactions}
+              />
+            </div>
+
+            <DashboardLowStockProducts
+              data={dashboard.low_stock_products}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

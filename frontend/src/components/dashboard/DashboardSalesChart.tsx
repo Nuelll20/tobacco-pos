@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
   Line,
@@ -22,33 +23,56 @@ type DashboardSalesChartProps = {
   data: DashboardDailySales[];
 };
 
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-function formatCompactCurrency(value: number) {
-  return new Intl.NumberFormat("id-ID", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
-}
-
-function formatChartDate(value: string) {
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "2-digit",
-    month: "short",
-  }).format(
-    new Date(`${value}T00:00:00`)
-  );
-}
-
 export default function DashboardSalesChart({
   data,
 }: DashboardSalesChartProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
+  function formatCurrency(value: number) {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(value);
+  }
+
+  function formatCompactCurrency(value: number) {
+    return new Intl.NumberFormat(locale, {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(value);
+  }
+
+  function formatChartDate(value: string) {
+    const date = new Date(`${value}T00:00:00`);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      day: "2-digit",
+      month: "short",
+    }).format(date);
+  }
+
+  function formatFullDate(value: string) {
+    const date = new Date(`${value}T00:00:00`);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+    }).format(date);
+  }
+
   const chartData = data.map((item) => ({
     date: item.date,
     dateLabel: formatChartDate(item.date),
@@ -60,18 +84,18 @@ export default function DashboardSalesChart({
     <Card>
       <CardHeader>
         <CardTitle>
-          Daily Sales
+          {t("dashboard.salesChart.title")}
         </CardTitle>
 
         <CardDescription>
-          Total sales recorded for each day in the selected period.
+          {t("dashboard.salesChart.description")}
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         {chartData.length === 0 ? (
           <div className="flex h-80 items-center justify-center text-sm text-muted-foreground">
-            No sales data available.
+            {t("dashboard.salesChart.empty")}
           </div>
         ) : (
           <div className="h-80 min-w-0">
@@ -106,7 +130,7 @@ export default function DashboardSalesChart({
                   tickMargin={10}
                   tickFormatter={(value) =>
                     formatCompactCurrency(
-                      Number(value)
+                      Number(value),
                     )
                   }
                 />
@@ -114,19 +138,25 @@ export default function DashboardSalesChart({
                 <Tooltip
                   formatter={(value) => [
                     formatCurrency(
-                      Number(value)
+                      Number(value),
                     ),
-                    "Total Sales",
+                    t(
+                      "dashboard.salesChart.totalSales",
+                    ),
                   ]}
                   labelFormatter={(
                     label,
-                    payload
+                    payload,
                   ) => {
                     const item =
                       payload?.[0]?.payload;
 
                     return item?.date
-                      ? `Date: ${item.date}`
+                      ? `${t(
+                          "dashboard.salesChart.date",
+                        )}: ${formatFullDate(
+                          item.date,
+                        )}`
                       : String(label);
                   }}
                 />
@@ -134,7 +164,9 @@ export default function DashboardSalesChart({
                 <Line
                   type="monotone"
                   dataKey="totalSales"
-                  name="Total Sales"
+                  name={t(
+                    "dashboard.salesChart.totalSales",
+                  )}
                   stroke="currentColor"
                   strokeWidth={2}
                   dot={{

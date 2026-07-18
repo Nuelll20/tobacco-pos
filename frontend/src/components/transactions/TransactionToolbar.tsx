@@ -3,6 +3,7 @@ import {
   RotateCcw,
   Search,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import type { PaymentMethod } from "@/types/transaction";
 
@@ -30,6 +31,8 @@ export default function TransactionToolbar({
   onResetFilters,
   onAddTransaction,
 }: TransactionToolbarProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex flex-1 flex-col gap-3 sm:flex-row">
@@ -41,7 +44,9 @@ export default function TransactionToolbar({
             onChange={(event) =>
               onSearchChange(event.target.value)
             }
-            placeholder="Search transaction no., product, SKU, or note"
+            placeholder={t(
+              "transactions.toolbar.searchPlaceholder",
+            )}
             className="pl-9"
           />
         </div>
@@ -50,16 +55,39 @@ export default function TransactionToolbar({
           value={paymentMethod}
           onChange={(event) =>
             onPaymentMethodChange(
-              event.target.value as PaymentMethod | "all"
+              event.target.value as
+                | PaymentMethod
+                | "all",
             )
           }
           className="h-10 rounded-md border bg-background px-3 text-sm sm:w-44"
-          aria-label="Filter by payment method"
+          aria-label={t(
+            "transactions.toolbar.paymentFilterAria",
+          )}
         >
-          <option value="all">All Payments</option>
-          <option value="cash">Cash</option>
-          <option value="qris">QRIS</option>
-          <option value="transfer">Transfer</option>
+          <option value="all">
+            {t(
+              "transactions.toolbar.allPayments",
+            )}
+          </option>
+
+          <option value="cash">
+            {t(
+              "transactions.paymentMethods.cash",
+            )}
+          </option>
+
+          <option value="qris">
+            {t(
+              "transactions.paymentMethods.qris",
+            )}
+          </option>
+
+          <option value="transfer">
+            {t(
+              "transactions.paymentMethods.transfer",
+            )}
+          </option>
         </select>
 
         <Button
@@ -69,7 +97,8 @@ export default function TransactionToolbar({
           onClick={onResetFilters}
         >
           <RotateCcw className="mr-2 h-4 w-4" />
-          Reset
+
+          {t("transactions.toolbar.reset")}
         </Button>
       </div>
 
@@ -78,7 +107,10 @@ export default function TransactionToolbar({
         onClick={onAddTransaction}
       >
         <Plus className="mr-2 h-4 w-4" />
-        New Transaction
+
+        {t(
+          "transactions.toolbar.newTransaction",
+        )}
       </Button>
     </div>
   );

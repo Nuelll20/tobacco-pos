@@ -1,4 +1,8 @@
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import {
+  AlertTriangle,
+  RefreshCw,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 
@@ -6,7 +10,11 @@ type Props = {
   onRetry: () => void;
 };
 
-export default function ProductErrorState({ onRetry }: Props) {
+export default function ProductErrorState({
+  onRetry,
+}: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex min-h-0 flex-1 items-center justify-center rounded-md border border-dashed">
       <div className="flex max-w-md flex-col items-center gap-4 px-6 py-10 text-center">
@@ -16,11 +24,11 @@ export default function ProductErrorState({ onRetry }: Props) {
 
         <div className="space-y-1">
           <h3 className="text-lg font-semibold">
-            Failed to load products
+            {t("products.error.title")}
           </h3>
 
           <p className="text-sm text-muted-foreground">
-            Please check your connection or try again.
+            {t("products.error.description")}
           </p>
         </div>
 
@@ -30,7 +38,8 @@ export default function ProductErrorState({ onRetry }: Props) {
           onClick={onRetry}
         >
           <RefreshCw className="mr-2 size-4" />
-          Retry
+
+          {t("products.error.retry")}
         </Button>
       </div>
     </div>

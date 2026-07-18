@@ -1,4 +1,5 @@
 import { CalendarDays } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,8 @@ export default function DashboardPeriodFilter({
   onEndDateChange,
   onApplyCustomPeriod,
 }: DashboardPeriodFilterProps) {
+  const { t } = useTranslation();
+
   const isCustomPeriod = period === "custom";
 
   const isCustomPeriodInvalid =
@@ -41,19 +44,19 @@ export default function DashboardPeriodFilter({
           <CalendarDays className="size-5 text-muted-foreground" />
 
           <h2 className="font-semibold">
-            Sales Overview
+            {t("dashboard.period.title")}
           </h2>
         </div>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Review sales performance for the selected period.
+          {t("dashboard.period.description")}
         </p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="space-y-2">
           <Label htmlFor="dashboard-period">
-            Period
+            {t("dashboard.period.label")}
           </Label>
 
           <select
@@ -63,14 +66,25 @@ export default function DashboardPeriodFilter({
             className="h-10 min-w-44 rounded-md border bg-background px-3 text-sm"
             onChange={(event) =>
               onPeriodChange(
-                event.target.value as DashboardPeriod
+                event.target.value as DashboardPeriod,
               )
             }
           >
-            <option value="today">Today</option>
-            <option value="7_days">Last 7 Days</option>
-            <option value="30_days">Last 30 Days</option>
-            <option value="custom">Custom Range</option>
+            <option value="today">
+              {t("dashboard.period.today")}
+            </option>
+
+            <option value="7_days">
+              {t("dashboard.period.last7Days")}
+            </option>
+
+            <option value="30_days">
+              {t("dashboard.period.last30Days")}
+            </option>
+
+            <option value="custom">
+              {t("dashboard.period.customRange")}
+            </option>
           </select>
         </div>
 
@@ -78,7 +92,7 @@ export default function DashboardPeriodFilter({
           <>
             <div className="space-y-2">
               <Label htmlFor="dashboard-start-date">
-                Start Date
+                {t("dashboard.period.startDate")}
               </Label>
 
               <Input
@@ -87,14 +101,16 @@ export default function DashboardPeriodFilter({
                 value={startDate}
                 disabled={isLoading}
                 onChange={(event) =>
-                  onStartDateChange(event.target.value)
+                  onStartDateChange(
+                    event.target.value,
+                  )
                 }
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="dashboard-end-date">
-                End Date
+                {t("dashboard.period.endDate")}
               </Label>
 
               <Input
@@ -104,7 +120,9 @@ export default function DashboardPeriodFilter({
                 min={startDate || undefined}
                 disabled={isLoading}
                 onChange={(event) =>
-                  onEndDateChange(event.target.value)
+                  onEndDateChange(
+                    event.target.value,
+                  )
                 }
               />
             </div>
@@ -117,7 +135,7 @@ export default function DashboardPeriodFilter({
               }
               onClick={onApplyCustomPeriod}
             >
-              Apply
+              {t("dashboard.period.apply")}
             </Button>
           </>
         )}

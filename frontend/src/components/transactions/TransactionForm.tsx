@@ -1,36 +1,30 @@
 import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Plus,
+  Trash2,
+} from "lucide-react";
 import {
   useFieldArray,
   useForm,
   useWatch,
 } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  Plus,
-  Trash2,
-} from "lucide-react";
-
-import { getErrorMessage } from "@/lib/error";
-
-import { useCreateTransaction } from "@/hooks/useCreateTransaction";
-import { useProducts } from "@/hooks/useProducts";
-import {
-  transactionSchema,
-  type TransactionFormData,
-} from "@/schemas/transaction";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+import { useCreateTransaction } from "@/hooks/useCreateTransaction";
+import { useProducts } from "@/hooks/useProducts";
+
+import { getErrorMessage } from "@/lib/error";
+
+import {
+  transactionSchema,
+  type TransactionFormData,
+} from "@/schemas/transaction";
 
 type TransactionFormProps = {
   onSuccess?: () => void;
@@ -39,6 +33,13 @@ type TransactionFormProps = {
 export default function TransactionForm({
   onSuccess,
 }: TransactionFormProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
   const {
     data: productsData,
     isLoading: isProductsLoading,
@@ -48,9 +49,9 @@ export default function TransactionForm({
     sort_direction: "asc",
   });
 
-  const products = (productsData?.data ?? []).filter(
-    (product) => product.is_active
-  );
+  const products = (
+    productsData?.data ?? []
+  ).filter((product) => product.is_active);
 
   const {
     control,
@@ -60,7 +61,10 @@ export default function TransactionForm({
     setValue,
     formState: { errors },
   } = useForm<TransactionFormData>({
-    resolver: zodResolver(transactionSchema),
+    resolver: zodResolver(
+      transactionSchema,
+    ),
+
     defaultValues: {
       payment_method: "cash",
       paid_amount: 0,
@@ -100,29 +104,38 @@ export default function TransactionForm({
       name: "paid_amount",
     }) ?? 0;
 
-  const itemSubtotals = watchedItems.map((item) => {
-    const product = products.find(
-      (currentProduct) =>
-        currentProduct.id === item.product_id
-    );
+  const itemSubtotals = watchedItems.map(
+    (item) => {
+      const product = products.find(
+        (currentProduct) =>
+          currentProduct.id ===
+          item.product_id,
+      );
 
-    const unitPrice = Number(
-      product?.selling_price ?? 0
-    );
+      const unitPrice = Number(
+        product?.selling_price ?? 0,
+      );
 
-    const quantity = Number(item.quantity) || 0;
+      const quantity =
+        Number(item.quantity) || 0;
 
-    return unitPrice * quantity;
-  });
+      return unitPrice * quantity;
+    },
+  );
 
   const totalAmount = itemSubtotals.reduce(
-    (total, subtotal) => total + subtotal,
-    0
+    (total, subtotal) =>
+      total + subtotal,
+    0,
   );
 
   const changeAmount =
     paymentMethod === "cash"
-      ? Math.max(Number(paidAmount) - totalAmount, 0)
+      ? Math.max(
+          Number(paidAmount) -
+            totalAmount,
+          0,
+        )
       : 0;
 
   const createTransactionMutation =
@@ -131,14 +144,42 @@ export default function TransactionForm({
   const isSaving =
     createTransactionMutation.isPending;
 
+  function formatCurrency(value: number) {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(value);
+  }
+
+  function formatNumber(value: number) {
+    return new Intl.NumberFormat(
+      locale,
+    ).format(value);
+  }
+
+  function translateValidationMessage(
+    message?: string,
+  ): string {
+    return message
+      ? t(message, {
+          defaultValue: message,
+        })
+      : "";
+  }
+
   useEffect(() => {
     if (
       paymentMethod === "qris" ||
       paymentMethod === "transfer"
     ) {
-      setValue("paid_amount", totalAmount, {
-        shouldValidate: true,
-      });
+      setValue(
+        "paid_amount",
+        totalAmount,
+        {
+          shouldValidate: true,
+        },
+      );
     }
   }, [
     paymentMethod,
@@ -146,22 +187,28 @@ export default function TransactionForm({
     totalAmount,
   ]);
 
-  const onSubmit = (data: TransactionFormData) => {
-    const hasInvalidStock = data.items.some((item) => {
-      const product = products.find(
-        (currentProduct) =>
-          currentProduct.id === item.product_id
-      );
+  function onSubmit(
+    data: TransactionFormData,
+  ) {
+    const hasInvalidStock =
+      data.items.some((item) => {
+        const product = products.find(
+          (currentProduct) =>
+            currentProduct.id ===
+            item.product_id,
+        );
 
-      return (
-        !product ||
-        item.quantity > product.stock
-      );
-    });
+        return (
+          !product ||
+          item.quantity > product.stock
+        );
+      });
 
     if (hasInvalidStock) {
       toast.error(
-        "One or more quantities exceed available stock."
+        t(
+          "transactions.toast.stockExceeded",
+        ),
       );
 
       return;
@@ -172,7 +219,9 @@ export default function TransactionForm({
       data.paid_amount < totalAmount
     ) {
       toast.error(
-        "Paid amount must be at least the transaction total."
+        t(
+          "transactions.toast.paidAmountTooLow",
+        ),
       );
 
       return;
@@ -180,21 +229,29 @@ export default function TransactionForm({
 
     createTransactionMutation.mutate(
       {
-        payment_method: data.payment_method,
+        payment_method:
+          data.payment_method,
+
         paid_amount:
           data.payment_method === "cash"
             ? data.paid_amount
             : totalAmount,
+
         note: data.note || null,
-        items: data.items.map((item) => ({
-          product_id: item.product_id,
-          quantity: item.quantity,
-        })),
+
+        items: data.items.map(
+          (item) => ({
+            product_id: item.product_id,
+            quantity: item.quantity,
+          }),
+        ),
       },
       {
         onSuccess: () => {
           toast.success(
-            "Transaction created successfully."
+            t(
+              "transactions.toast.created",
+            ),
           );
 
           reset({
@@ -213,11 +270,13 @@ export default function TransactionForm({
         },
 
         onError: (error) => {
-          toast.error(getErrorMessage(error));
+          toast.error(
+            getErrorMessage(error),
+          );
         },
-      }
+      },
     );
-  };
+  }
 
   return (
     <form
@@ -227,29 +286,50 @@ export default function TransactionForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="payment_method">
-            Payment Method
+            {t(
+              "transactions.form.paymentMethod",
+            )}
           </Label>
 
           <select
             id="payment_method"
             className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+            disabled={isSaving}
             {...register("payment_method")}
           >
-            <option value="cash">Cash</option>
-            <option value="qris">QRIS</option>
-            <option value="transfer">Transfer</option>
+            <option value="cash">
+              {t(
+                "transactions.paymentMethods.cash",
+              )}
+            </option>
+
+            <option value="qris">
+              {t(
+                "transactions.paymentMethods.qris",
+              )}
+            </option>
+
+            <option value="transfer">
+              {t(
+                "transactions.paymentMethods.transfer",
+              )}
+            </option>
           </select>
 
           {errors.payment_method && (
             <p className="text-sm text-destructive">
-              {errors.payment_method.message}
+              {translateValidationMessage(
+                errors.payment_method.message,
+              )}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="paid_amount">
-            Paid Amount
+            {t(
+              "transactions.form.paidAmount",
+            )}
           </Label>
 
           <Input
@@ -257,6 +337,7 @@ export default function TransactionForm({
             type="number"
             min={0}
             step="0.01"
+            disabled={isSaving}
             readOnly={
               paymentMethod === "qris" ||
               paymentMethod === "transfer"
@@ -268,21 +349,27 @@ export default function TransactionForm({
 
           {errors.paid_amount && (
             <p className="text-sm text-destructive">
-              {errors.paid_amount.message}
+              {translateValidationMessage(
+                errors.paid_amount.message,
+              )}
             </p>
           )}
         </div>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="font-semibold">
-              Transaction Items
+              {t(
+                "transactions.form.itemsTitle",
+              )}
             </h3>
 
             <p className="text-sm text-muted-foreground">
-              Add one or more products to the transaction.
+              {t(
+                "transactions.form.itemsDescription",
+              )}
             </p>
           </div>
 
@@ -290,7 +377,10 @@ export default function TransactionForm({
             type="button"
             variant="outline"
             size="sm"
-            disabled={isProductsLoading}
+            disabled={
+              isProductsLoading ||
+              isSaving
+            }
             onClick={() =>
               append({
                 product_id: 0,
@@ -299,136 +389,214 @@ export default function TransactionForm({
             }
           >
             <Plus className="mr-2 size-4" />
-            Add Item
+
+            {t(
+              "transactions.form.addItem",
+            )}
           </Button>
         </div>
 
-        {fields.map((field, index) => (
-          <div
-            key={field.id}
-            className="grid gap-4 rounded-lg border p-4 sm:grid-cols-[1fr_120px_160px_180px_auto]"
-          >
-            <div className="space-y-2">
-              <Label htmlFor={`items.${index}.product_id`}>
-                Product
-              </Label>
+        {fields.map(
+          (field, index) => (
+            <div
+              key={field.id}
+              className="grid gap-4 rounded-lg border p-4 sm:grid-cols-[1fr_120px_160px_180px_auto]"
+            >
+              <div className="space-y-2">
+                <Label
+                  htmlFor={`items.${index}.product_id`}
+                >
+                  {t(
+                    "transactions.form.product",
+                  )}
+                </Label>
 
-              <select
-                id={`items.${index}.product_id`}
-                className="h-10 w-full rounded-md border bg-background px-3 text-sm"
-                disabled={isProductsLoading}
-                {...register(`items.${index}.product_id`, {
-                  valueAsNumber: true,
-                })}
-              >
-                <option value={0}>
-                  {isProductsLoading
-                    ? "Loading products..."
-                    : "Select product"}
-                </option>
-
-                {products.map((product) => (
-                  <option
-                    key={product.id}
-                    value={product.id}
-                    disabled={product.stock < 1}
-                  >
-                    {product.name} - {product.sku} - Stock:{" "}
-                    {product.stock}
+                <select
+                  id={`items.${index}.product_id`}
+                  className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+                  disabled={
+                    isProductsLoading ||
+                    isSaving
+                  }
+                  {...register(
+                    `items.${index}.product_id`,
+                    {
+                      valueAsNumber: true,
+                    },
+                  )}
+                >
+                  <option value={0}>
+                    {isProductsLoading
+                      ? t(
+                          "transactions.form.loadingProducts",
+                        )
+                      : t(
+                          "transactions.form.selectProduct",
+                        )}
                   </option>
-                ))}
-              </select>
 
-              {errors.items?.[index]?.product_id && (
-                <p className="text-sm text-destructive">
-                  {
-                    errors.items[index]?.product_id
-                      ?.message
-                  }
-                </p>
-              )}
-            </div>
+                  {products.map(
+                    (product) => (
+                      <option
+                        key={product.id}
+                        value={product.id}
+                        disabled={
+                          product.stock < 1
+                        }
+                      >
+                        {t(
+                          "transactions.form.productOption",
+                          {
+                            name:
+                              product.name,
+                            sku:
+                              product.sku,
+                            stock:
+                              formatNumber(
+                                product.stock,
+                              ),
+                          },
+                        )}
+                      </option>
+                    ),
+                  )}
+                </select>
 
-            <div className="space-y-2">
-              <Label htmlFor={`items.${index}.quantity`}>
-                Quantity
-              </Label>
+                {errors.items?.[index]
+                  ?.product_id && (
+                  <p className="text-sm text-destructive">
+                    {translateValidationMessage(
+                      errors.items[index]
+                        ?.product_id
+                        ?.message,
+                    )}
+                  </p>
+                )}
+              </div>
 
-              <Input
-                id={`items.${index}.quantity`}
-                type="number"
-                min={1}
-                max={
-                  products.find(
-                    (product) =>
-                      product.id ===
-                      watchedItems[index]?.product_id
-                  )?.stock
-                }
-                {...register(`items.${index}.quantity`, {
-                  valueAsNumber: true,
-                })}
-              />
+              <div className="space-y-2">
+                <Label
+                  htmlFor={`items.${index}.quantity`}
+                >
+                  {t(
+                    "transactions.form.quantity",
+                  )}
+                </Label>
 
-              {errors.items?.[index]?.quantity && (
-                <p className="text-sm text-destructive">
-                  {
-                    errors.items[index]?.quantity
-                      ?.message
-                  }
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Unit Price</Label>
-
-              <div className="flex h-10 items-center justify-end rounded-md border bg-muted/40 px-3 text-sm">
-                {formatCurrency(
-                  Number(
+                <Input
+                  id={`items.${index}.quantity`}
+                  type="number"
+                  min={1}
+                  disabled={isSaving}
+                  max={
                     products.find(
                       (product) =>
                         product.id ===
-                        watchedItems[index]?.product_id
-                    )?.selling_price ?? 0
-                  )
+                        watchedItems[index]
+                          ?.product_id,
+                    )?.stock
+                  }
+                  {...register(
+                    `items.${index}.quantity`,
+                    {
+                      valueAsNumber: true,
+                    },
+                  )}
+                />
+
+                {errors.items?.[index]
+                  ?.quantity && (
+                  <p className="text-sm text-destructive">
+                    {translateValidationMessage(
+                      errors.items[index]
+                        ?.quantity
+                        ?.message,
+                    )}
+                  </p>
                 )}
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label>Subtotal</Label>
+              <div className="space-y-2">
+                <Label>
+                  {t(
+                    "transactions.form.unitPrice",
+                  )}
+                </Label>
 
-              <div className="flex h-10 items-center justify-end rounded-md border bg-muted/40 px-3 text-sm font-medium">
-                {formatCurrency(itemSubtotals[index] ?? 0)}
+                <div className="flex h-10 items-center justify-end rounded-md border bg-muted/40 px-3 text-sm">
+                  {formatCurrency(
+                    Number(
+                      products.find(
+                        (product) =>
+                          product.id ===
+                          watchedItems[index]
+                            ?.product_id,
+                      )?.selling_price ??
+                        0,
+                    ),
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>
+                  {t(
+                    "transactions.form.subtotal",
+                  )}
+                </Label>
+
+                <div className="flex h-10 items-center justify-end rounded-md border bg-muted/40 px-3 text-sm font-medium">
+                  {formatCurrency(
+                    itemSubtotals[index] ??
+                      0,
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  disabled={
+                    fields.length === 1 ||
+                    isSaving
+                  }
+                  aria-label={t(
+                    "transactions.form.removeItemAria",
+                    {
+                      number:
+                        formatNumber(
+                          index + 1,
+                        ),
+                    },
+                  )}
+                  onClick={() =>
+                    remove(index)
+                  }
+                >
+                  <Trash2 className="size-4" />
+                </Button>
               </div>
             </div>
+          ),
+        )}
 
-            <div className="flex items-end">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                disabled={fields.length === 1}
-                aria-label={`Remove item ${index + 1}`}
-                onClick={() => remove(index)}
-              >
-                <Trash2 className="size-4" />
-              </Button>
-            </div>
-          </div>
-        ))}
-
-        {typeof errors.items?.message === "string" && (
+        {typeof errors.items?.message ===
+          "string" && (
           <p className="text-sm text-destructive">
-            {errors.items.message}
+            {translateValidationMessage(
+              errors.items.message,
+            )}
           </p>
         )}
 
         <div className="grid gap-4 rounded-lg border bg-muted/30 p-4 sm:grid-cols-3">
           <div>
             <p className="text-sm text-muted-foreground">
-              Transaction Total
+              {t(
+                "transactions.form.transactionTotal",
+              )}
             </p>
 
             <p className="mt-1 text-lg font-semibold">
@@ -438,40 +606,55 @@ export default function TransactionForm({
 
           <div>
             <p className="text-sm text-muted-foreground">
-              Paid Amount
+              {t(
+                "transactions.form.paidAmount",
+              )}
             </p>
 
             <p className="mt-1 text-lg font-semibold">
-              {formatCurrency(Number(paidAmount) || 0)}
+              {formatCurrency(
+                Number(paidAmount) || 0,
+              )}
             </p>
           </div>
 
           <div>
             <p className="text-sm text-muted-foreground">
-              Change
+              {t(
+                "transactions.form.change",
+              )}
             </p>
 
             <p className="mt-1 text-lg font-semibold">
-              {formatCurrency(changeAmount)}
+              {formatCurrency(
+                changeAmount,
+              )}
             </p>
           </div>
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="note">Note</Label>
+        <Label htmlFor="note">
+          {t("transactions.form.note")}
+        </Label>
 
         <textarea
           id="note"
           rows={3}
-          placeholder="Optional transaction note"
+          disabled={isSaving}
+          placeholder={t(
+            "transactions.form.notePlaceholder",
+          )}
           className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           {...register("note")}
         />
 
         {errors.note && (
           <p className="text-sm text-destructive">
-            {errors.note.message}
+            {translateValidationMessage(
+              errors.note.message,
+            )}
           </p>
         )}
       </div>
@@ -486,8 +669,12 @@ export default function TransactionForm({
         }
       >
         {isSaving
-          ? "Saving Transaction..."
-          : "Save Transaction"}
+          ? t(
+              "transactions.form.saving",
+            )
+          : t(
+              "transactions.form.save",
+            )}
       </Button>
     </form>
   );

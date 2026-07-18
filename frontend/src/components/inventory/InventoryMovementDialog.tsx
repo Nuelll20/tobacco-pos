@@ -1,5 +1,6 @@
-import InventoryMovementForm from "@/components/inventory/InventoryMovementForm";
+import { useTranslation } from "react-i18next";
 
+import InventoryMovementForm from "@/components/inventory/InventoryMovementForm";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,8 @@ export default function InventoryMovementDialog({
   open,
   onOpenChange,
 }: InventoryMovementDialogProps) {
+  const { t } = useTranslation();
+
   return (
     <Dialog
       open={open}
@@ -24,16 +27,20 @@ export default function InventoryMovementDialog({
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Add Inventory Movement</DialogTitle>
+          <DialogTitle>
+            {t("inventory.dialog.title")}
+          </DialogTitle>
 
           <DialogDescription>
-            Record stock in, stock out, or adjustment for a product.
+            {t("inventory.dialog.description")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-6">
           <InventoryMovementForm
-            onSuccess={() => onOpenChange(false)}
+            onSuccess={() =>
+              onOpenChange(false)
+            }
           />
         </div>
       </DialogContent>

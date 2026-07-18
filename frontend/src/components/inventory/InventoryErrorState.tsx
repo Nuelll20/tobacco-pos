@@ -1,24 +1,27 @@
 import { AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 
-interface InventoryErrorStateProps {
+type InventoryErrorStateProps = {
   onRetry: () => void;
-}
+};
 
 export default function InventoryErrorState({
   onRetry,
 }: InventoryErrorStateProps) {
+  const { t } = useTranslation();
+
   return (
-    <div className="flex min-h-[320px] flex-1 flex-col items-center justify-center rounded-md border border-dashed p-6 text-center">
-      <AlertCircle className="mb-3 h-8 w-8 text-muted-foreground" />
+    <div className="flex min-h-[320px] flex-col items-center justify-center rounded-md border border-dashed px-6 text-center">
+      <AlertCircle className="mb-3 h-8 w-8 text-destructive" />
 
       <h3 className="text-lg font-semibold">
-        Failed to load inventory movements
+        {t("inventory.error.title")}
       </h3>
 
       <p className="mt-1 max-w-md text-sm text-muted-foreground">
-        Something went wrong while loading inventory history. Please try again.
+        {t("inventory.error.description")}
       </p>
 
       <Button
@@ -27,7 +30,7 @@ export default function InventoryErrorState({
         className="mt-4"
         onClick={onRetry}
       >
-        Retry
+        {t("inventory.error.retry")}
       </Button>
     </div>
   );

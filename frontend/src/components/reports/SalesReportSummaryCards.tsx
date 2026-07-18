@@ -4,6 +4,7 @@ import {
   ReceiptText,
   TrendingUp,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   Card,
@@ -20,54 +21,77 @@ type SalesReportSummaryCardsProps = {
   summary: SalesReportSummary;
 };
 
-function formatCurrency(value: string) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value));
-}
-
 export default function SalesReportSummaryCards({
   summary,
 }: SalesReportSummaryCardsProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
+  function formatCurrency(value: string) {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(Number(value));
+  }
+
+  function formatNumber(value: number) {
+    return new Intl.NumberFormat(
+      locale,
+    ).format(value);
+  }
+
   const cards = [
     {
-      title: "Total Sales",
-      value: formatCurrency(
-        summary.total_sales
+      title: t(
+        "reports.summary.totalSales.title",
       ),
-      description:
-        "Revenue from all filtered transactions",
+      value: formatCurrency(
+        summary.total_sales,
+      ),
+      description: t(
+        "reports.summary.totalSales.description",
+      ),
       icon: Banknote,
     },
     {
-      title: "Transactions",
-      value:
-        summary.transaction_count.toLocaleString(
-          "id-ID"
-        ),
-      description:
-        "Number of matching transactions",
+      title: t(
+        "reports.summary.transactions.title",
+      ),
+      value: formatNumber(
+        summary.transaction_count,
+      ),
+      description: t(
+        "reports.summary.transactions.description",
+      ),
       icon: ReceiptText,
     },
     {
-      title: "Products Sold",
-      value:
-        summary.products_sold.toLocaleString(
-          "id-ID"
-        ),
-      description:
-        "Total quantity sold in the report",
+      title: t(
+        "reports.summary.productsSold.title",
+      ),
+      value: formatNumber(
+        summary.products_sold,
+      ),
+      description: t(
+        "reports.summary.productsSold.description",
+      ),
       icon: Package,
     },
     {
-      title: "Average Transaction",
-      value: formatCurrency(
-        summary.average_transaction
+      title: t(
+        "reports.summary.averageTransaction.title",
       ),
-      description:
-        "Average value per transaction",
+      value: formatCurrency(
+        summary.average_transaction,
+      ),
+      description: t(
+        "reports.summary.averageTransaction.description",
+      ),
       icon: TrendingUp,
     },
   ];

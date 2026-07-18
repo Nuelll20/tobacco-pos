@@ -1,4 +1,5 @@
 import { Eye } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import type {
   PaymentMethod,
@@ -7,7 +8,6 @@ import type {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
 import {
   Table,
   TableBody,
@@ -22,37 +22,58 @@ type TransactionTableProps = {
   onView: (transaction: Transaction) => void;
 };
 
-const paymentLabels: Record<PaymentMethod, string> = {
-  cash: "Cash",
-  qris: "QRIS",
-  transfer: "Transfer",
+const paymentLabelKeys: Record<
+  PaymentMethod,
+  string
+> = {
+  cash: "transactions.paymentMethods.cash",
+  qris: "transactions.paymentMethods.qris",
+  transfer:
+    "transactions.paymentMethods.transfer",
 };
 
-const paymentClassNames: Record<PaymentMethod, string> = {
+const paymentClassNames: Record<
+  PaymentMethod,
+  string
+> = {
   cash: "bg-emerald-100 text-emerald-700",
   qris: "bg-sky-100 text-sky-700",
-  transfer: "bg-violet-100 text-violet-700",
+  transfer:
+    "bg-violet-100 text-violet-700",
 };
-
-function formatCurrency(value: string) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value));
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
-}
 
 export default function TransactionTable({
   transactions,
   onView,
 }: TransactionTableProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
+  function formatCurrency(value: string) {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(Number(value));
+  }
+
+  function formatDate(value: string) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "-";
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  }
+
   return (
     <div className="min-h-0 flex-1 rounded-md border">
       <div className="h-full overflow-auto">
@@ -60,35 +81,41 @@ export default function TransactionTable({
           <TableHeader>
             <TableRow>
               <TableHead className="sticky top-0 z-10 bg-background">
-                Transaction No.
+                {t(
+                  "transactions.table.transactionNo",
+                )}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">
-                Date
+                {t("transactions.table.date")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">
-                Payment
+                {t(
+                  "transactions.table.payment",
+                )}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Total
+                {t("transactions.table.total")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Paid
+                {t("transactions.table.paid")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Change
+                {t("transactions.table.change")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">
-                Note
+                {t("transactions.table.note")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 w-28 bg-background text-center">
-                Actions
+                {t(
+                  "transactions.table.actions",
+                )}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -100,70 +127,97 @@ export default function TransactionTable({
                   colSpan={8}
                   className="h-32 text-center text-muted-foreground"
                 >
-                  No transactions found.
+                  {t(
+                    "transactions.table.empty",
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
-              transactions.map((transaction) => (
-                <TableRow key={transaction.id}>
-                  <TableCell className="font-medium">
-                    {transaction.transaction_no}
-                  </TableCell>
+              transactions.map(
+                (transaction) => (
+                  <TableRow key={transaction.id}>
+                    <TableCell className="font-medium">
+                      {
+                        transaction.transaction_no
+                      }
+                    </TableCell>
 
-                  <TableCell className="whitespace-nowrap">
-                    {formatDate(transaction.created_at)}
-                  </TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {formatDate(
+                        transaction.created_at,
+                      )}
+                    </TableCell>
 
-                  <TableCell>
-                    <Badge
-                      className={
-                        paymentClassNames[
-                          transaction.payment_method
-                        ]
+                    <TableCell>
+                      <Badge
+                        className={
+                          paymentClassNames[
+                            transaction
+                              .payment_method
+                          ]
+                        }
+                      >
+                        {t(
+                          paymentLabelKeys[
+                            transaction
+                              .payment_method
+                          ],
+                        )}
+                      </Badge>
+                    </TableCell>
+
+                    <TableCell className="text-right font-medium">
+                      {formatCurrency(
+                        transaction.total_amount,
+                      )}
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      {formatCurrency(
+                        transaction.paid_amount,
+                      )}
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      {formatCurrency(
+                        transaction.change_amount,
+                      )}
+                    </TableCell>
+
+                    <TableCell
+                      className="max-w-[240px] truncate"
+                      title={
+                        transaction.note ||
+                        undefined
                       }
                     >
-                      {
-                        paymentLabels[
-                          transaction.payment_method
-                        ]
-                      }
-                    </Badge>
-                  </TableCell>
+                      {transaction.note || "-"}
+                    </TableCell>
 
-                  <TableCell className="text-right font-medium">
-                    {formatCurrency(transaction.total_amount)}
-                  </TableCell>
-
-                  <TableCell className="text-right">
-                    {formatCurrency(transaction.paid_amount)}
-                  </TableCell>
-
-                  <TableCell className="text-right">
-                    {formatCurrency(transaction.change_amount)}
-                  </TableCell>
-
-                  <TableCell
-                    className="max-w-[240px] truncate"
-                    title={transaction.note || undefined}
-                  >
-                    {transaction.note || "-"}
-                  </TableCell>
-
-                  <TableCell>
-                    <div className="flex justify-center">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        aria-label={`View transaction ${transaction.transaction_no}`}
-                        onClick={() => onView(transaction)}
-                      >
-                        <Eye className="size-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+                    <TableCell>
+                      <div className="flex justify-center">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          aria-label={t(
+                            "transactions.table.viewAria",
+                            {
+                              number:
+                                transaction.transaction_no,
+                            },
+                          )}
+                          onClick={() =>
+                            onView(transaction)
+                          }
+                        >
+                          <Eye className="size-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ),
+              )
             )}
           </TableBody>
         </Table>

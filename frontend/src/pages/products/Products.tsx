@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useProducts } from "@/hooks/useProducts";
 import { useDeleteProduct } from "@/hooks/useDeleteProduct";
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/card";
 
 export default function Products() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
@@ -156,7 +158,7 @@ export default function Products() {
 
           deleteProductMutation.mutate(productToDelete.id, {
             onSuccess: () => {
-              toast.success("Product deleted successfully.");
+              toast.success(t("products.toast.deleted"));
 
               setDeleteOpen(false);
               setProductToDelete(null);

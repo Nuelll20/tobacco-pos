@@ -1,6 +1,6 @@
-import ProductForm from "@/components/products/ProductForm";
-import type { Product } from "@/types/product";
+import { useTranslation } from "react-i18next";
 
+import ProductForm from "@/components/products/ProductForm";
 import {
   Dialog,
   DialogContent,
@@ -8,6 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+import type { Product } from "@/types/product";
 
 type ProductDialogProps = {
   open: boolean;
@@ -22,30 +24,40 @@ export default function ProductDialog({
   mode,
   product,
 }: ProductDialogProps) {
+  const { t } = useTranslation();
+
+  const isCreateMode = mode === "create";
+
   return (
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
-            {mode === "create"
-              ? "Add Product"
-              : "Edit Product"}
+            {isCreateMode
+              ? t("products.dialog.addTitle")
+              : t("products.dialog.editTitle")}
           </DialogTitle>
 
           <DialogDescription>
-            {mode === "create"
-              ? "Fill in the information below to create a new product."
-              : "Update the information of this product."}
+            {isCreateMode
+              ? t(
+                  "products.dialog.addDescription",
+                )
+              : t(
+                  "products.dialog.editDescription",
+                )}
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-6">
           <ProductForm
             product={product}
-            onSuccess={() => onOpenChange(false)}
+            onSuccess={() =>
+              onOpenChange(false)
+            }
           />
         </div>
       </DialogContent>

@@ -1,4 +1,5 @@
 import { FileSearch } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,13 +22,14 @@ type SalesReportTableProps = {
   transactions: SalesReportTransaction[];
 };
 
-const paymentLabels: Record<
+const paymentLabelKeys: Record<
   PaymentMethod,
   string
 > = {
-  cash: "Cash",
-  qris: "QRIS",
-  transfer: "Transfer",
+  cash: "transactions.paymentMethods.cash",
+  qris: "transactions.paymentMethods.qris",
+  transfer:
+    "transactions.paymentMethods.transfer",
 };
 
 const paymentClassNames: Record<
@@ -36,161 +38,239 @@ const paymentClassNames: Record<
 > = {
   cash: "bg-emerald-100 text-emerald-700",
   qris: "bg-sky-100 text-sky-700",
-  transfer: "bg-violet-100 text-violet-700",
+  transfer:
+    "bg-violet-100 text-violet-700",
 };
-
-function formatCurrency(value: string) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value));
-}
-
-function formatDate(value: string) {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
-}
 
 export default function SalesReportTable({
   transactions,
 }: SalesReportTableProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
+  function formatCurrency(value: string) {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(Number(value));
+  }
+
+  function formatNumber(value: number) {
+    return new Intl.NumberFormat(
+      locale,
+    ).format(value);
+  }
+
+  function formatDate(value: string) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "-";
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  }
+
   return (
-    <div className="min-h-0 flex-1 rounded-md border">
-      <div className="h-full overflow-auto">
-        <Table className="min-w-[1200px]">
-          <TableHeader>
+    <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
+      <Table className="min-w-[1080px]">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="sticky top-0 z-10 min-w-[200px] bg-background">
+              {t(
+                "reports.table.productNames",
+              )}
+            </TableHead>
+
+            <TableHead className="sticky top-0 z-10 min-w-[160px] bg-background">
+              {t("reports.table.date")}
+            </TableHead>
+
+            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background">
+              {t("reports.table.payment")}
+            </TableHead>
+
+            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background text-right">
+              {t("reports.table.quantity")}
+            </TableHead>
+
+            <TableHead className="sticky top-0 z-10 min-w-[130px] bg-background text-right">
+              {t("reports.table.unitPrice")}
+            </TableHead>
+
+            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background text-right">
+              {t("reports.table.total")}
+            </TableHead>
+
+            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background text-right">
+              {t("reports.table.paid")}
+            </TableHead>
+
+            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background text-right">
+              {t("reports.table.change")}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {transactions.length === 0 ? (
             <TableRow>
-              <TableHead className="sticky top-0 z-10 bg-background">
-                Transaction No.
-              </TableHead>
+              <TableCell
+                colSpan={8}
+                className="h-48 text-center"
+              >
+                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                  <FileSearch className="mb-3 size-8" />
 
-              <TableHead className="sticky top-0 z-10 bg-background">
-                Date
-              </TableHead>
-
-              <TableHead className="sticky top-0 z-10 bg-background">
-                Payment
-              </TableHead>
-
-              <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Products
-              </TableHead>
-
-              <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Total
-              </TableHead>
-
-              <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Paid
-              </TableHead>
-
-              <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Change
-              </TableHead>
-
-              <TableHead className="sticky top-0 z-10 bg-background">
-                Note
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {transactions.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={8}
-                  className="h-48 text-center"
-                >
-                  <div className="flex flex-col items-center justify-center text-muted-foreground">
-                    <FileSearch className="mb-3 size-8" />
-
-                    <p className="text-sm font-medium text-foreground">
-                      No sales transactions found
-                    </p>
-
-                    <p className="mt-1 text-xs">
-                      Adjust the report filters to find matching transactions.
-                    </p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              transactions.map((transaction) => (
-                <TableRow key={transaction.id}>
-                  <TableCell className="font-medium">
-                    {transaction.transaction_no}
-                  </TableCell>
-
-                  <TableCell className="whitespace-nowrap">
-                    {formatDate(
-                      transaction.created_at
+                  <p className="text-sm font-medium text-foreground">
+                    {t(
+                      "reports.table.emptyTitle",
                     )}
-                  </TableCell>
+                  </p>
 
-                  <TableCell>
-                    <Badge
+                  <p className="mt-1 text-xs">
+                    {t(
+                      "reports.table.emptyDescription",
+                    )}
+                  </p>
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : (
+            transactions.map(
+              (
+                transaction,
+                transactionIndex,
+              ) => {
+                const items =
+                  transaction.items.length > 0
+                    ? transaction.items
+                    : [null];
+
+                return items.map(
+                  (item, itemIndex) => (
+                    <TableRow
+                      key={
+                        item
+                          ? `${transaction.id}-${item.id}`
+                          : `${transaction.id}-empty`
+                      }
                       className={
-                        paymentClassNames[
-                          transaction.payment_method
-                        ]
+                        transactionIndex > 0 &&
+                        itemIndex === 0
+                          ? "border-t-2"
+                          : undefined
                       }
                     >
-                      {
-                        paymentLabels[
-                          transaction.payment_method
-                        ]
-                      }
-                    </Badge>
-                  </TableCell>
+                      <TableCell className="align-middle">
+                        {item ? (
+                          <div className="min-w-0">
+                            <p
+                              className="font-medium"
+                              title={
+                                item.product_name
+                              }
+                            >
+                              {
+                                item.product_name
+                              }
+                            </p>
 
-                  <TableCell className="text-right">
-                    {transaction.products_sold.toLocaleString(
-                      "id-ID"
-                    )}
-                  </TableCell>
+                            <p
+                              className="mt-0.5 text-xs text-muted-foreground"
+                              title={
+                                item.product_sku
+                              }
+                            >
+                              {item.product_sku}
+                            </p>
+                          </div>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
 
-                  <TableCell className="whitespace-nowrap text-right font-medium">
-                    {formatCurrency(
-                      transaction.total_amount
-                    )}
-                  </TableCell>
+                      <TableCell className="whitespace-nowrap align-middle">
+                        {formatDate(
+                          transaction.created_at,
+                        )}
+                      </TableCell>
 
-                  <TableCell className="whitespace-nowrap text-right">
-                    {formatCurrency(
-                      transaction.paid_amount
-                    )}
-                  </TableCell>
+                      <TableCell className="align-middle">
+                        <Badge
+                          className={
+                            paymentClassNames[
+                              transaction
+                                .payment_method
+                            ]
+                          }
+                        >
+                          {t(
+                            paymentLabelKeys[
+                              transaction
+                                .payment_method
+                            ],
+                          )}
+                        </Badge>
+                      </TableCell>
 
-                  <TableCell className="whitespace-nowrap text-right">
-                    {formatCurrency(
-                      transaction.change_amount
-                    )}
-                  </TableCell>
+                      <TableCell className="whitespace-nowrap align-middle text-right">
+                        {item
+                          ? formatNumber(
+                              item.quantity,
+                            )
+                          : "-"}
+                      </TableCell>
 
-                  <TableCell
-                    className="max-w-[240px] truncate"
-                    title={
-                      transaction.note ||
-                      undefined
-                    }
-                  >
-                    {transaction.note || "-"}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                      <TableCell className="whitespace-nowrap align-middle text-right">
+                        {item
+                          ? formatCurrency(
+                              item.unit_price,
+                            )
+                          : "-"}
+                      </TableCell>
+
+                      <TableCell className="whitespace-nowrap align-middle text-right font-medium">
+                        {item
+                          ? formatCurrency(
+                              item.subtotal,
+                            )
+                          : formatCurrency(
+                              transaction.total_amount,
+                            )}
+                      </TableCell>
+
+                      <TableCell className="whitespace-nowrap align-middle text-right">
+                        {itemIndex === 0
+                          ? formatCurrency(
+                              transaction.paid_amount,
+                            )
+                          : "-"}
+                      </TableCell>
+
+                      <TableCell className="whitespace-nowrap align-middle text-right">
+                        {itemIndex === 0
+                          ? formatCurrency(
+                              transaction.change_amount,
+                            )
+                          : "-"}
+                      </TableCell>
+                    </TableRow>
+                  ),
+                );
+              },
+            )
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 }

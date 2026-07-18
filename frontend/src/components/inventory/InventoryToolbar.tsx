@@ -1,118 +1,163 @@
 import { Plus } from "lucide-react";
-
-import type { InventoryMovementType } from "@/types/inventory";
-import type { Product } from "@/types/product";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+import type {
+  InventoryMovementType,
+} from "@/types/inventory";
+import type { Product } from "@/types/product";
+
 interface InventoryToolbarProps {
-    search: string;
-    type: InventoryMovementType | "all";
-    productId: number | "all";
-    products: Product[];
-    isProductsLoading: boolean;
-    hasActiveFilters: boolean;
-    onSearchChange: (value: string) => void;
-    onTypeChange: (value: InventoryMovementType | "all") => void;
-    onProductChange: (value: number | "all") => void;
-    onResetFilters: () => void;
-    onAddMovement: () => void;
+  search: string;
+  type: InventoryMovementType | "all";
+  productId: number | "all";
+  products: Product[];
+  isProductsLoading: boolean;
+  hasActiveFilters: boolean;
+  onSearchChange: (value: string) => void;
+  onTypeChange: (
+    value: InventoryMovementType | "all",
+  ) => void;
+  onProductChange: (
+    value: number | "all",
+  ) => void;
+  onResetFilters: () => void;
+  onAddMovement: () => void;
 }
 
 export default function InventoryToolbar({
-    search,
-    type,
-    productId,
-    products,
-    isProductsLoading,
-    hasActiveFilters,
-    onSearchChange,
-    onTypeChange,
-    onProductChange,
-    onResetFilters,
-    onAddMovement,
+  search,
+  type,
+  productId,
+  products,
+  isProductsLoading,
+  hasActiveFilters,
+  onSearchChange,
+  onTypeChange,
+  onProductChange,
+  onResetFilters,
+  onAddMovement,
 }: InventoryToolbarProps) {
-    return (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h1 className="text-2xl font-bold tracking-tight">
-                    Inventory
-                </h1>
+  const { t } = useTranslation();
 
-                <p className="text-sm text-muted-foreground">
-                    Track stock in, stock out, adjustments, and movement history.
-                </p>
-            </div>
+  return (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t("inventory.title")}
+        </h1>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <Input
-                    value={search}
-                    onChange={(event) => onSearchChange(event.target.value)}
-                    placeholder="Search product, SKU, or reference..."
-                    className="w-full sm:w-80"
-                />
+        <p className="text-sm text-muted-foreground">
+          {t("inventory.description")}
+        </p>
+      </div>
 
-                <select
-                    value={productId}
-                    onChange={(event) => {
-                        const value = event.target.value;
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <Input
+          value={search}
+          placeholder={t(
+            "inventory.toolbar.searchPlaceholder",
+          )}
+          className="w-full sm:w-80"
+          onChange={(event) =>
+            onSearchChange(event.target.value)
+          }
+        />
 
-                        onProductChange(
-                            value === "all" ? "all" : Number(value)
-                        );
-                    }}
-                    className="h-10 rounded-md border bg-background px-3 text-sm"
-                    disabled={isProductsLoading}
-                >
-                    <option value="all">
-                        {isProductsLoading
-                            ? "Loading products..."
-                            : "All Products"}
-                    </option>
+        <select
+          value={productId}
+          disabled={isProductsLoading}
+          aria-label={t(
+            "inventory.toolbar.allProducts",
+          )}
+          className="h-10 rounded-md border bg-background px-3 text-sm"
+          onChange={(event) => {
+            const value = event.target.value;
 
-                    {products.map((product) => (
-                        <option
-                            key={product.id}
-                            value={product.id}
-                        >
-                            {product.name} — {product.sku}
-                        </option>
-                    ))}
-                </select>
+            onProductChange(
+              value === "all"
+                ? "all"
+                : Number(value),
+            );
+          }}
+        >
+          <option value="all">
+            {isProductsLoading
+              ? t(
+                  "inventory.toolbar.loadingProducts",
+                )
+              : t(
+                  "inventory.toolbar.allProducts",
+                )}
+          </option>
 
-                <select
-                    value={type}
-                    onChange={(event) =>
-                        onTypeChange(
-                            event.target.value as InventoryMovementType | "all"
-                        )
-                    }
-                    className="h-10 rounded-md border bg-background px-3 text-sm"
-                >
-                    <option value="all">All Types</option>
-                    <option value="stock_in">Stock In</option>
-                    <option value="stock_out">Stock Out</option>
-                    <option value="adjustment">Adjustment</option>
-                </select>
+          {products.map((product) => (
+            <option
+              key={product.id}
+              value={product.id}
+            >
+              {product.name} - {product.sku}
+            </option>
+          ))}
+        </select>
 
-                <Button
-                    type="button"
-                    variant="outline"
-                    disabled={!hasActiveFilters}
-                    onClick={onResetFilters}
-                >
-                    Reset
-                </Button>
+        <select
+          value={type}
+          aria-label={t(
+            "inventory.toolbar.allTypes",
+          )}
+          className="h-10 rounded-md border bg-background px-3 text-sm"
+          onChange={(event) =>
+            onTypeChange(
+              event.target.value as
+                | InventoryMovementType
+                | "all",
+            )
+          }
+        >
+          <option value="all">
+            {t("inventory.toolbar.allTypes")}
+          </option>
 
-                <Button
-                    type="button"
-                    onClick={onAddMovement}
-                >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Movement
-                </Button>
-            </div>
-        </div>
-    );
+          <option value="stock_in">
+            {t(
+              "inventory.movementTypes.stockIn",
+            )}
+          </option>
+
+          <option value="stock_out">
+            {t(
+              "inventory.movementTypes.stockOut",
+            )}
+          </option>
+
+          <option value="adjustment">
+            {t(
+              "inventory.movementTypes.adjustment",
+            )}
+          </option>
+        </select>
+
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!hasActiveFilters}
+          onClick={onResetFilters}
+        >
+          {t("inventory.toolbar.reset")}
+        </Button>
+
+        <Button
+          type="button"
+          onClick={onAddMovement}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+
+          {t("inventory.toolbar.addMovement")}
+        </Button>
+      </div>
+    </div>
+  );
 }

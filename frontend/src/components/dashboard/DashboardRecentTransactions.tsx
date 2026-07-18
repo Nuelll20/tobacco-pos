@@ -1,4 +1,5 @@
 import { ReceiptText } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,48 +29,65 @@ type DashboardRecentTransactionsProps = {
   data: DashboardRecentTransaction[];
 };
 
-const paymentMethodLabels: Record<
+const paymentMethodLabelKeys: Record<
   PaymentMethod,
   string
 > = {
-  cash: "Cash",
-  qris: "QRIS",
-  transfer: "Transfer",
+  cash: "dashboard.paymentMethods.cash",
+  qris: "dashboard.paymentMethods.qris",
+  transfer: "dashboard.paymentMethods.transfer",
 };
-
-function formatCurrency(value: string) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value));
-}
-
-function formatDateTime(value: string) {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
-}
 
 export default function DashboardRecentTransactions({
   data,
 }: DashboardRecentTransactionsProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
+  function formatCurrency(value: string) {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(Number(value));
+  }
+
+  function formatDateTime(value: string) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "-";
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  }
+
+  function formatNumber(value: number) {
+    return new Intl.NumberFormat(
+      locale,
+    ).format(value);
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          Recent Transactions
+          {t(
+            "dashboard.recentTransactions.title",
+          )}
         </CardTitle>
 
         <CardDescription>
-          Latest transactions within the selected period.
+          {t(
+            "dashboard.recentTransactions.description",
+          )}
         </CardDescription>
       </CardHeader>
 
@@ -79,11 +97,15 @@ export default function DashboardRecentTransactions({
             <ReceiptText className="mb-3 size-8 text-muted-foreground" />
 
             <p className="text-sm font-medium">
-              No transactions found
+              {t(
+                "dashboard.recentTransactions.emptyTitle",
+              )}
             </p>
 
             <p className="mt-1 text-xs text-muted-foreground">
-              Transactions for the selected period will appear here.
+              {t(
+                "dashboard.recentTransactions.emptyDescription",
+              )}
             </p>
           </div>
         ) : (
@@ -92,23 +114,33 @@ export default function DashboardRecentTransactions({
               <TableHeader>
                 <TableRow>
                   <TableHead>
-                    Transaction
+                    {t(
+                      "dashboard.recentTransactions.columns.transaction",
+                    )}
                   </TableHead>
 
                   <TableHead>
-                    Date
+                    {t(
+                      "dashboard.recentTransactions.columns.date",
+                    )}
                   </TableHead>
 
                   <TableHead>
-                    Payment
+                    {t(
+                      "dashboard.recentTransactions.columns.payment",
+                    )}
                   </TableHead>
 
                   <TableHead className="text-right">
-                    Products
+                    {t(
+                      "dashboard.recentTransactions.columns.products",
+                    )}
                   </TableHead>
 
                   <TableHead className="text-right">
-                    Total
+                    {t(
+                      "dashboard.recentTransactions.columns.total",
+                    )}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -122,29 +154,29 @@ export default function DashboardRecentTransactions({
 
                     <TableCell className="whitespace-nowrap text-muted-foreground">
                       {formatDateTime(
-                        transaction.created_at
+                        transaction.created_at,
                       )}
                     </TableCell>
 
                     <TableCell>
                       <Badge variant="outline">
-                        {
-                          paymentMethodLabels[
+                        {t(
+                          paymentMethodLabelKeys[
                             transaction.payment_method
-                          ]
-                        }
+                          ],
+                        )}
                       </Badge>
                     </TableCell>
 
                     <TableCell className="text-right">
-                      {transaction.products_sold.toLocaleString(
-                        "id-ID"
+                      {formatNumber(
+                        transaction.products_sold,
                       )}
                     </TableCell>
 
                     <TableCell className="whitespace-nowrap text-right font-medium">
                       {formatCurrency(
-                        transaction.total_amount
+                        transaction.total_amount,
                       )}
                     </TableCell>
                   </TableRow>

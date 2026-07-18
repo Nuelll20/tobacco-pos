@@ -1,23 +1,20 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-import type { Product } from "@/types/product";
-
+import ProductFormFields from "@/components/products/ProductFormFields";
+import { Button } from "@/components/ui/button";
+import { useCreateProduct } from "@/hooks/useCreateProduct";
+import { useUpdateProduct } from "@/hooks/useUpdateProduct";
+import { getErrorMessage } from "@/lib/error";
 import {
   productSchema,
   type ProductFormData,
 } from "@/schemas/product";
 
-import { getErrorMessage } from "@/lib/error";
-
-import { useUpdateProduct } from "@/hooks/useUpdateProduct";
-
-import { useCreateProduct } from "@/hooks/useCreateProduct";
-
-import { Button } from "@/components/ui/button";
-import ProductFormFields from "@/components/products/ProductFormFields";
+import type { Product } from "@/types/product";
 
 type ProductFormProps = {
   product?: Product | null;
@@ -28,6 +25,8 @@ export default function ProductForm({
   product,
   onSuccess,
 }: ProductFormProps) {
+  const { t } = useTranslation();
+
   const {
     register,
     handleSubmit,
@@ -49,38 +48,46 @@ export default function ProductForm({
     },
   });
 
-  const createProductMutation = useCreateProduct();
-  const updateProductMutation = useUpdateProduct();
+  const createProductMutation =
+    useCreateProduct();
+
+  const updateProductMutation =
+    useUpdateProduct();
 
   useEffect(() => {
     if (product) {
       reset({
         sku: product.sku,
         name: product.name,
-        purchase_price: product.purchase_price,
-        selling_price: product.selling_price,
+        purchase_price:
+          product.purchase_price,
+        selling_price:
+          product.selling_price,
         stock: product.stock,
-        minimum_stock: product.minimum_stock,
+        minimum_stock:
+          product.minimum_stock,
         is_active: product.is_active,
       });
-    } else {
-      reset({
-        sku: "",
-        name: "",
-        purchase_price: 0,
-        selling_price: 0,
-        stock: 0,
-        minimum_stock: 0,
-        is_active: true,
-      });
+
+      return;
     }
+
+    reset({
+      sku: "",
+      name: "",
+      purchase_price: 0,
+      selling_price: 0,
+      stock: 0,
+      minimum_stock: 0,
+      is_active: true,
+    });
   }, [product, reset]);
 
   const isSaving =
     createProductMutation.isPending ||
     updateProductMutation.isPending;
 
-  const onSubmit = (data: ProductFormData) => {
+  function onSubmit(data: ProductFormData) {
     if (product) {
       updateProductMutation.mutate(
         {
@@ -89,17 +96,20 @@ export default function ProductForm({
         },
         {
           onSuccess: () => {
-            toast.success("Product updated successfully.");
+            toast.success(
+              t("products.toast.updated"),
+            );
 
             reset();
-
             onSuccess?.();
           },
 
           onError: (error) => {
-            toast.error(getErrorMessage(error));
+            toast.error(
+              getErrorMessage(error),
+            );
           },
-        }
+        },
       );
 
       return;
@@ -107,18 +117,21 @@ export default function ProductForm({
 
     createProductMutation.mutate(data, {
       onSuccess: () => {
-        toast.success("Product created successfully.");
+        toast.success(
+          t("products.toast.created"),
+        );
 
         reset();
-
         onSuccess?.();
       },
 
       onError: (error) => {
-        toast.error(getErrorMessage(error));
+        toast.error(
+          getErrorMessage(error),
+        );
       },
     });
-  };
+  }
 
   return (
     <form
@@ -137,7 +150,9 @@ export default function ProductForm({
         className="w-full"
         disabled={isSaving}
       >
-        {isSaving ? "Saving..." : "Save Product"}
+        {isSaving
+          ? t("products.form.saving")
+          : t("products.form.save")}
       </Button>
     </form>
   );

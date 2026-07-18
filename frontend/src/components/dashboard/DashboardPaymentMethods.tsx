@@ -3,6 +3,7 @@ import {
   CreditCard,
   QrCode,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   Card,
@@ -26,50 +27,72 @@ type DashboardPaymentMethodsProps = {
 const paymentMethodMeta: Record<
   PaymentMethod,
   {
-    label: string;
+    labelKey: string;
     icon: typeof Banknote;
   }
 > = {
   cash: {
-    label: "Cash",
+    labelKey:
+      "dashboard.paymentMethods.cash",
     icon: Banknote,
   },
   qris: {
-    label: "QRIS",
+    labelKey:
+      "dashboard.paymentMethods.qris",
     icon: QrCode,
   },
   transfer: {
-    label: "Transfer",
+    labelKey:
+      "dashboard.paymentMethods.transfer",
     icon: CreditCard,
   },
 };
 
-function formatCurrency(value: string | number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value));
-}
-
 export default function DashboardPaymentMethods({
   data,
 }: DashboardPaymentMethodsProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
+  function formatCurrency(
+    value: string | number,
+  ) {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(Number(value));
+  }
+
+  function formatNumber(value: number) {
+    return new Intl.NumberFormat(
+      locale,
+    ).format(value);
+  }
+
   const totalSales = data.reduce(
     (total, item) =>
       total + Number(item.total_sales),
-    0
+    0,
   );
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          Payment Methods
+          {t(
+            "dashboard.paymentMethods.title",
+          )}
         </CardTitle>
 
         <CardDescription>
-          Sales distribution by payment method.
+          {t(
+            "dashboard.paymentMethods.description",
+          )}
         </CardDescription>
       </CardHeader>
 
@@ -85,10 +108,11 @@ export default function DashboardPaymentMethods({
           const percentage =
             totalSales > 0
               ? (
-                  (
-                    Number(item.total_sales) /
-                    totalSales
-                  ) * 100
+                  (Number(
+                    item.total_sales,
+                  ) /
+                    totalSales) *
+                  100
                 ).toFixed(1)
               : "0.0";
 
@@ -105,14 +129,19 @@ export default function DashboardPaymentMethods({
 
                   <div>
                     <p className="text-sm font-medium">
-                      {meta.label}
+                      {t(meta.labelKey)}
                     </p>
 
                     <p className="text-xs text-muted-foreground">
-                      {item.transaction_count.toLocaleString(
-                        "id-ID"
-                      )}{" "}
-                      transactions
+                      {t(
+                        "dashboard.paymentMethods.transactions",
+                        {
+                          count:
+                            formatNumber(
+                              item.transaction_count,
+                            ),
+                        },
+                      )}
                     </p>
                   </div>
                 </div>
@@ -120,7 +149,7 @@ export default function DashboardPaymentMethods({
                 <div className="text-right">
                   <p className="text-sm font-semibold">
                     {formatCurrency(
-                      item.total_sales
+                      item.total_sales,
                     )}
                   </p>
 

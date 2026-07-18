@@ -4,6 +4,7 @@ import {
   Receipt,
   TrendingUp,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   Card,
@@ -18,40 +19,75 @@ type DashboardSummaryCardsProps = {
   summary: DashboardSummaryMetrics;
 };
 
-function formatCurrency(value: string) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value));
-}
-
 export default function DashboardSummaryCards({
   summary,
 }: DashboardSummaryCardsProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
+  function formatCurrency(value: string) {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(Number(value));
+  }
+
+  function formatNumber(value: number) {
+    return value.toLocaleString(locale);
+  }
+
   const cards = [
     {
-      title: "Total Sales",
-      value: formatCurrency(summary.total_sales),
-      description: "Revenue in the selected period",
+      title: t(
+        "dashboard.summary.totalSales.title",
+      ),
+      value: formatCurrency(
+        summary.total_sales,
+      ),
+      description: t(
+        "dashboard.summary.totalSales.description",
+      ),
       icon: DollarSign,
     },
     {
-      title: "Transactions",
-      value: summary.transaction_count.toLocaleString("id-ID"),
-      description: "Completed sales transactions",
+      title: t(
+        "dashboard.summary.transactions.title",
+      ),
+      value: formatNumber(
+        summary.transaction_count,
+      ),
+      description: t(
+        "dashboard.summary.transactions.description",
+      ),
       icon: Receipt,
     },
     {
-      title: "Products Sold",
-      value: summary.products_sold.toLocaleString("id-ID"),
-      description: "Total product quantity sold",
+      title: t(
+        "dashboard.summary.productsSold.title",
+      ),
+      value: formatNumber(
+        summary.products_sold,
+      ),
+      description: t(
+        "dashboard.summary.productsSold.description",
+      ),
       icon: Package,
     },
     {
-      title: "Average Transaction",
-      value: formatCurrency(summary.average_transaction),
-      description: "Average revenue per transaction",
+      title: t(
+        "dashboard.summary.averageTransaction.title",
+      ),
+      value: formatCurrency(
+        summary.average_transaction,
+      ),
+      description: t(
+        "dashboard.summary.averageTransaction.description",
+      ),
       icon: TrendingUp,
     },
   ];

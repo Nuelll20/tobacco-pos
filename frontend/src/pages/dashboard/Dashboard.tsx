@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import DashboardLowStockProducts from "@/components/dashboard/DashboardLowStockProducts";
 import DashboardPaymentMethods from "@/components/dashboard/DashboardPaymentMethods";
@@ -21,6 +22,8 @@ import type {
 } from "@/types/dashboard";
 
 export default function Dashboard() {
+  const { t } = useTranslation();
+
   const [period, setPeriod] =
     useState<DashboardPeriod>("today");
 
@@ -46,7 +49,7 @@ export default function Dashboard() {
   const dashboard = data?.data;
 
   function handlePeriodChange(
-    nextPeriod: DashboardPeriod
+    nextPeriod: DashboardPeriod,
   ) {
     setPeriod(nextPeriod);
 
@@ -77,11 +80,11 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">
-          Dashboard
+          {t("dashboard.title")}
         </h1>
 
         <p className="mt-2 text-muted-foreground">
-          Monitor sales performance and inventory status.
+          {t("dashboard.description")}
         </p>
       </div>
 
@@ -93,11 +96,11 @@ export default function Dashboard() {
             <AlertCircle className="mb-4 size-10 text-destructive" />
 
             <h2 className="text-lg font-semibold">
-              Failed to load dashboard
+              {t("dashboard.error.title")}
             </h2>
 
             <p className="mt-2 max-w-md text-sm text-muted-foreground">
-              The dashboard data could not be loaded. Check the connection and try again.
+              {t("dashboard.error.description")}
             </p>
 
             <Button
@@ -107,7 +110,7 @@ export default function Dashboard() {
                 void refetch();
               }}
             >
-              Try Again
+              {t("common.retry")}
             </Button>
           </CardContent>
         </Card>

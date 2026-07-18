@@ -1,9 +1,7 @@
-import type { Product } from "@/types/product";
-
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +12,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+import type { Product } from "@/types/product";
 
 type Props = {
   open: boolean;
@@ -30,11 +30,19 @@ export default function DeleteProductDialog({
   loading = false,
   onConfirm,
 }: Props) {
+  const { t } = useTranslation();
+
+  const productName =
+    product?.name ??
+    t("products.deleteDialog.fallbackName");
+
   return (
     <AlertDialog
       open={open}
       onOpenChange={(value) => {
-        if (loading) return;
+        if (loading) {
+          return;
+        }
 
         onOpenChange(value);
       }}
@@ -42,21 +50,24 @@ export default function DeleteProductDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Delete product?
+            {t("products.deleteDialog.title")}
           </AlertDialogTitle>
 
           <AlertDialogDescription>
-            Are you sure you want to delete{" "}
-            <span className="font-medium text-foreground">
-              {product?.name ?? "this product"}
-            </span>
-            ? This action cannot be undone.
+            {t(
+              "products.deleteDialog.description",
+              {
+                name: productName,
+              },
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading}>
-            Cancel
+            {t(
+              "products.deleteDialog.cancel",
+            )}
           </AlertDialogCancel>
 
           <AlertDialogAction asChild>
@@ -69,7 +80,10 @@ export default function DeleteProductDialog({
               {loading && (
                 <Loader2 className="mr-2 size-4 animate-spin" />
               )}
-              Delete
+
+              {t(
+                "products.deleteDialog.confirm",
+              )}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

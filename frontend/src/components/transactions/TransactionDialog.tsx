@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import TransactionForm from "@/components/transactions/TransactionForm";
 
 import {
@@ -17,6 +19,8 @@ export default function TransactionDialog({
   open,
   onOpenChange,
 }: TransactionDialogProps) {
+  const { t } = useTranslation();
+
   return (
     <Dialog
       open={open}
@@ -24,10 +28,12 @@ export default function TransactionDialog({
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-5xl">
         <DialogHeader>
-          <DialogTitle>New Transaction</DialogTitle>
+          <DialogTitle>
+            {t("transactions.dialog.title")}
+          </DialogTitle>
 
           <DialogDescription>
-            Select products, enter payment information, and save the sale.
+            {t("transactions.dialog.description")}
           </DialogDescription>
         </DialogHeader>
 

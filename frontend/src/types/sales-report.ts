@@ -17,6 +17,15 @@ export interface SalesReportTopProduct {
   total_sales: string;
 }
 
+export interface SalesReportTransactionItem {
+  id: number;
+  product_name: string;
+  product_sku: string;
+  quantity: number;
+  unit_price: string;
+  subtotal: string;
+}
+
 export interface SalesReportTransaction {
   id: number;
   transaction_no: string;
@@ -25,6 +34,7 @@ export interface SalesReportTransaction {
   paid_amount: string;
   change_amount: string;
   products_sold: number;
+  items: SalesReportTransactionItem[];
   note: string | null;
   created_at: string;
 }

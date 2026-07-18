@@ -1,5 +1,6 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 import { useLogin } from "@/hooks/useLogin";
 
@@ -8,18 +9,18 @@ import {
   type LoginFormData,
 } from "@/schemas/auth";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function LoginForm() {
+  const { t } = useTranslation();
   const loginMutation = useLogin();
 
   const {
@@ -28,25 +29,36 @@ export default function LoginForm() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (data: LoginFormData) => {
+  function translateValidationMessage(
+    message?: string,
+  ): string {
+    return message
+      ? t(message, {
+          defaultValue: message,
+        })
+      : "";
+  }
+
+  function onSubmit(data: LoginFormData) {
     loginMutation.mutate(data);
-  };
+  }
 
   return (
     <Card className="w-full max-w-md shadow-lg">
       <CardHeader>
         <CardTitle className="text-center text-2xl font-bold">
-          Tobacco POS
+          {t("common.appName")}
         </CardTitle>
 
         <p className="text-center text-sm text-muted-foreground">
-          Sign in to your account
+          {t("auth.signInDescription")}
         </p>
       </CardHeader>
 
@@ -57,38 +69,50 @@ export default function LoginForm() {
         >
           <div className="space-y-2">
             <Label htmlFor="email">
-              Email
+              {t("auth.email")}
             </Label>
 
             <Input
               id="email"
               type="email"
-              placeholder="name@example.com"
+              autoComplete="email"
+              placeholder={t(
+                "auth.emailPlaceholder",
+              )}
+              disabled={loginMutation.isPending}
               {...register("email")}
             />
 
             {errors.email && (
               <p className="text-sm text-destructive">
-                {errors.email.message}
+                {translateValidationMessage(
+                  errors.email.message,
+                )}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="password">
-              Password
+              {t("auth.password")}
             </Label>
 
             <Input
               id="password"
               type="password"
-              placeholder="••••••••"
+              autoComplete="current-password"
+              placeholder={t(
+                "auth.passwordPlaceholder",
+              )}
+              disabled={loginMutation.isPending}
               {...register("password")}
             />
 
             {errors.password && (
               <p className="text-sm text-destructive">
-                {errors.password.message}
+                {translateValidationMessage(
+                  errors.password.message,
+                )}
               </p>
             )}
           </div>
@@ -99,8 +123,8 @@ export default function LoginForm() {
             disabled={loginMutation.isPending}
           >
             {loginMutation.isPending
-              ? "Signing In..."
-              : "Sign In"}
+              ? t("auth.signingIn")
+              : t("auth.signIn")}
           </Button>
         </form>
       </CardContent>

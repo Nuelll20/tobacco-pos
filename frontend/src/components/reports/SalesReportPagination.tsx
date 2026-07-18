@@ -2,6 +2,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 
@@ -28,26 +29,46 @@ export default function SalesReportPagination({
   onPageChange,
   onPerPageChange,
 }: SalesReportPaginationProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
+  function formatNumber(value: number) {
+    return new Intl.NumberFormat(
+      locale,
+    ).format(value);
+  }
+
   return (
     <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm text-muted-foreground">
-        Showing {from ?? 0} to {to ?? 0} of{" "}
-        {total.toLocaleString("id-ID")} transactions
+        {t("reports.pagination.showing", {
+          from: formatNumber(from ?? 0),
+          to: formatNumber(to ?? 0),
+          total: formatNumber(total),
+        })}
       </p>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
-            Rows per page
+            {t(
+              "reports.pagination.rowsPerPage",
+            )}
           </span>
 
           <select
             value={perPage}
             className="h-9 rounded-md border bg-background px-2 text-sm"
-            aria-label="Rows per page"
+            aria-label={t(
+              "reports.pagination.rowsPerPage",
+            )}
             onChange={(event) =>
               onPerPageChange(
-                Number(event.target.value)
+                Number(event.target.value),
               )
             }
           >
@@ -64,7 +85,10 @@ export default function SalesReportPagination({
 
         <div className="flex items-center justify-end gap-2">
           <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {lastPage}
+            {t("reports.pagination.page", {
+              current: formatNumber(currentPage),
+              last: formatNumber(lastPage),
+            })}
           </span>
 
           <Button
@@ -72,7 +96,9 @@ export default function SalesReportPagination({
             variant="outline"
             size="icon"
             disabled={currentPage <= 1}
-            aria-label="Previous page"
+            aria-label={t(
+              "reports.pagination.previousPage",
+            )}
             onClick={() =>
               onPageChange(currentPage - 1)
             }
@@ -85,7 +111,9 @@ export default function SalesReportPagination({
             variant="outline"
             size="icon"
             disabled={currentPage >= lastPage}
-            aria-label="Next page"
+            aria-label={t(
+              "reports.pagination.nextPage",
+            )}
             onClick={() =>
               onPageChange(currentPage + 1)
             }

@@ -1,37 +1,68 @@
 import axios from "axios";
 
-const errorMessageMap: Record<string, string> = {
-  "The sku has already been taken.": "SKU sudah digunakan.",
-  "The name has already been taken.": "Nama produk sudah digunakan.",
-  "The given data was invalid.": "Data yang dikirim tidak valid.",
+import i18n from "@/i18n";
+
+const errorMessageKeyMap: Record<
+  string,
+  | "errors.skuTaken"
+  | "errors.productNameTaken"
+  | "errors.invalidData"
+> = {
+  "The sku has already been taken.":
+    "errors.skuTaken",
+
+  "The name has already been taken.":
+    "errors.productNameTaken",
+
+  "The given data was invalid.":
+    "errors.invalidData",
 };
 
-export function getErrorMessage(error: unknown): string {
+function translateServerMessage(
+  message: string,
+): string {
+  const translationKey =
+    errorMessageKeyMap[message];
+
+  return translationKey
+    ? i18n.t(translationKey)
+    : message;
+}
+
+export function getErrorMessage(
+  error: unknown,
+): string {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data;
 
-    // Laravel Validation Errors
+    // Laravel validation errors
     if (data?.errors) {
-      const firstField = Object.keys(data.errors)[0];
+      const firstField =
+        Object.keys(data.errors)[0];
 
       if (firstField) {
-        const firstMessage = data.errors[firstField][0];
+        const firstMessage =
+          data.errors[firstField]?.[0];
 
-        return (
-          errorMessageMap[firstMessage] ??
-          firstMessage
-        );
+        if (
+          typeof firstMessage === "string"
+        ) {
+          return translateServerMessage(
+            firstMessage,
+          );
+        }
       }
     }
 
-    // Laravel Message
-    if (data?.message) {
-      return (
-        errorMessageMap[data.message] ??
-        data.message
+    // Laravel general message
+    if (
+      typeof data?.message === "string"
+    ) {
+      return translateServerMessage(
+        data.message,
       );
     }
   }
 
-  return "Terjadi kesalahan. Silakan coba lagi.";
+  return i18n.t("errors.generic");
 }

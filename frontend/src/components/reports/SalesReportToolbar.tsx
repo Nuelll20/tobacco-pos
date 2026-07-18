@@ -3,6 +3,7 @@ import {
   RotateCcw,
   Search,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,15 +42,17 @@ export default function SalesReportToolbar({
   onEndDateChange,
   onResetFilters,
 }: SalesReportToolbarProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-4 rounded-lg border bg-card p-4">
       <div>
         <h2 className="font-semibold">
-          Report Filters
+          {t("reports.toolbar.title")}
         </h2>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Filter sales transactions by keyword, payment method, or date range.
+          {t("reports.toolbar.description")}
         </p>
       </div>
 
@@ -60,9 +63,13 @@ export default function SalesReportToolbar({
           <Input
             value={search}
             disabled={isLoading}
-            placeholder="Search transaction, product, SKU, or note"
+            placeholder={t(
+              "reports.toolbar.searchPlaceholder",
+            )}
             className="pl-9"
-            aria-label="Search sales report"
+            aria-label={t(
+              "reports.toolbar.searchAria",
+            )}
             onChange={(event) =>
               onSearchChange(event.target.value)
             }
@@ -73,27 +80,39 @@ export default function SalesReportToolbar({
           value={paymentMethod}
           disabled={isLoading}
           className="h-10 rounded-md border bg-background px-3 text-sm lg:col-span-2"
-          aria-label="Filter by payment method"
+          aria-label={t(
+            "reports.toolbar.paymentFilterAria",
+          )}
           onChange={(event) =>
             onPaymentMethodChange(
-              event.target.value as PaymentMethod | "all"
+              event.target.value as
+                | PaymentMethod
+                | "all",
             )
           }
         >
           <option value="all">
-            All Payments
+            {t(
+              "reports.toolbar.allPayments",
+            )}
           </option>
 
           <option value="cash">
-            Cash
+            {t(
+              "transactions.paymentMethods.cash",
+            )}
           </option>
 
           <option value="qris">
-            QRIS
+            {t(
+              "transactions.paymentMethods.qris",
+            )}
           </option>
 
           <option value="transfer">
-            Transfer
+            {t(
+              "transactions.paymentMethods.transfer",
+            )}
           </option>
         </select>
 
@@ -102,7 +121,7 @@ export default function SalesReportToolbar({
             htmlFor="report-start-date"
             className="sr-only"
           >
-            Start Date
+            {t("reports.toolbar.startDate")}
           </Label>
 
           <div className="relative">
@@ -114,10 +133,12 @@ export default function SalesReportToolbar({
               value={startDate}
               disabled={isLoading}
               className="pl-9"
-              aria-label="Start date"
+              aria-label={t(
+                "reports.toolbar.startDate",
+              )}
               onChange={(event) =>
                 onStartDateChange(
-                  event.target.value
+                  event.target.value,
                 )
               }
             />
@@ -129,7 +150,7 @@ export default function SalesReportToolbar({
             htmlFor="report-end-date"
             className="sr-only"
           >
-            End Date
+            {t("reports.toolbar.endDate")}
           </Label>
 
           <div className="relative">
@@ -142,10 +163,12 @@ export default function SalesReportToolbar({
               min={startDate || undefined}
               disabled={isLoading}
               className="pl-9"
-              aria-label="End date"
+              aria-label={t(
+                "reports.toolbar.endDate",
+              )}
               onChange={(event) =>
                 onEndDateChange(
-                  event.target.value
+                  event.target.value,
                 )
               }
             />
@@ -164,7 +187,7 @@ export default function SalesReportToolbar({
         >
           <RotateCcw className="mr-2 size-4" />
 
-          Reset
+          {t("reports.toolbar.reset")}
         </Button>
       </div>
     </div>

@@ -1,5 +1,6 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -12,6 +13,8 @@ import {
 const rows = Array.from({ length: 8 });
 
 export default function TransactionTableSkeleton() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-0 flex-1 rounded-md border">
       <div className="h-full overflow-auto">
@@ -19,35 +22,41 @@ export default function TransactionTableSkeleton() {
           <TableHeader>
             <TableRow>
               <TableHead className="sticky top-0 z-10 bg-background">
-                Transaction No.
+                {t(
+                  "transactions.table.transactionNo",
+                )}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">
-                Date
+                {t("transactions.table.date")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">
-                Payment
+                {t(
+                  "transactions.table.payment",
+                )}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Total
+                {t("transactions.table.total")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Paid
+                {t("transactions.table.paid")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background text-right">
-                Change
+                {t("transactions.table.change")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 bg-background">
-                Note
+                {t("transactions.table.note")}
               </TableHead>
 
               <TableHead className="sticky top-0 z-10 w-28 bg-background text-center">
-                Actions
+                {t(
+                  "transactions.table.actions",
+                )}
               </TableHead>
             </TableRow>
           </TableHeader>

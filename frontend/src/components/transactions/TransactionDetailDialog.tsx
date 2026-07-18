@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import type { PaymentMethod } from "@/types/transaction";
 
 import { useTransaction } from "@/hooks/useTransaction";
@@ -28,38 +30,38 @@ type TransactionDetailDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-const paymentLabels: Record<PaymentMethod, string> = {
-  cash: "Cash",
-  qris: "QRIS",
-  transfer: "Transfer",
+const paymentLabelKeys: Record<
+  PaymentMethod,
+  string
+> = {
+  cash: "transactions.paymentMethods.cash",
+  qris: "transactions.paymentMethods.qris",
+  transfer:
+    "transactions.paymentMethods.transfer",
 };
 
-const paymentClassNames: Record<PaymentMethod, string> = {
+const paymentClassNames: Record<
+  PaymentMethod,
+  string
+> = {
   cash: "bg-emerald-100 text-emerald-700",
   qris: "bg-sky-100 text-sky-700",
-  transfer: "bg-violet-100 text-violet-700",
+  transfer:
+    "bg-violet-100 text-violet-700",
 };
-
-function formatCurrency(value: string) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value));
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "long",
-    timeStyle: "short",
-  }).format(new Date(value));
-}
 
 export default function TransactionDetailDialog({
   open,
   transactionId,
   onOpenChange,
 }: TransactionDetailDialogProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
   const {
     data,
     isLoading,
@@ -69,6 +71,33 @@ export default function TransactionDetailDialog({
 
   const transaction = data?.data;
 
+  function formatCurrency(value: string) {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(Number(value));
+  }
+
+  function formatNumber(value: number) {
+    return new Intl.NumberFormat(
+      locale,
+    ).format(value);
+  }
+
+  function formatDate(value: string) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "-";
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "long",
+      timeStyle: "short",
+    }).format(date);
+  }
+
   return (
     <Dialog
       open={open}
@@ -76,17 +105,23 @@ export default function TransactionDetailDialog({
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Transaction Detail</DialogTitle>
+          <DialogTitle>
+            {t("transactions.detail.title")}
+          </DialogTitle>
 
           <DialogDescription>
-            Review transaction information and purchased items.
+            {t(
+              "transactions.detail.description",
+            )}
           </DialogDescription>
         </DialogHeader>
 
         {isLoading ? (
           <div className="mt-4 space-y-6">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {Array.from({ length: 4 }).map((_, index) => (
+              {Array.from({
+                length: 4,
+              }).map((_, index) => (
                 <Skeleton
                   key={index}
                   className="h-20 rounded-lg"
@@ -99,11 +134,15 @@ export default function TransactionDetailDialog({
         ) : isError ? (
           <div className="mt-4 flex flex-col items-center rounded-md border border-dashed p-8 text-center">
             <p className="font-medium">
-              Failed to load transaction detail.
+              {t(
+                "transactions.detail.errorTitle",
+              )}
             </p>
 
             <p className="mt-1 text-sm text-muted-foreground">
-              Please try loading the transaction again.
+              {t(
+                "transactions.detail.errorDescription",
+              )}
             </p>
 
             <Button
@@ -114,7 +153,9 @@ export default function TransactionDetailDialog({
                 void refetch();
               }}
             >
-              Try Again
+              {t(
+                "transactions.detail.retry",
+              )}
             </Button>
           </div>
         ) : transaction ? (
@@ -122,24 +163,36 @@ export default function TransactionDetailDialog({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">
-                  Transaction No.
+                  {t(
+                    "transactions.detail.transactionNo",
+                  )}
                 </p>
 
                 <p className="font-semibold">
-                  {transaction.transaction_no}
+                  {
+                    transaction.transaction_no
+                  }
                 </p>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {formatDate(transaction.created_at)}
+                  {formatDate(
+                    transaction.created_at,
+                  )}
                 </p>
               </div>
 
               <Badge
                 className={
-                  paymentClassNames[transaction.payment_method]
+                  paymentClassNames[
+                    transaction.payment_method
+                  ]
                 }
               >
-                {paymentLabels[transaction.payment_method]}
+                {t(
+                  paymentLabelKeys[
+                    transaction.payment_method
+                  ],
+                )}
               </Badge>
             </div>
 
@@ -148,89 +201,133 @@ export default function TransactionDetailDialog({
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-lg border p-4">
                 <p className="text-sm text-muted-foreground">
-                  Total
+                  {t(
+                    "transactions.detail.total",
+                  )}
                 </p>
 
                 <p className="mt-1 text-lg font-semibold">
-                  {formatCurrency(transaction.total_amount)}
+                  {formatCurrency(
+                    transaction.total_amount,
+                  )}
                 </p>
               </div>
 
               <div className="rounded-lg border p-4">
                 <p className="text-sm text-muted-foreground">
-                  Paid
+                  {t(
+                    "transactions.detail.paid",
+                  )}
                 </p>
 
                 <p className="mt-1 text-lg font-semibold">
-                  {formatCurrency(transaction.paid_amount)}
+                  {formatCurrency(
+                    transaction.paid_amount,
+                  )}
                 </p>
               </div>
 
               <div className="rounded-lg border p-4">
                 <p className="text-sm text-muted-foreground">
-                  Change
+                  {t(
+                    "transactions.detail.change",
+                  )}
                 </p>
 
                 <p className="mt-1 text-lg font-semibold">
-                  {formatCurrency(transaction.change_amount)}
+                  {formatCurrency(
+                    transaction.change_amount,
+                  )}
                 </p>
               </div>
             </div>
 
             <div>
               <h3 className="mb-3 font-semibold">
-                Purchased Items
+                {t(
+                  "transactions.detail.purchasedItems",
+                )}
               </h3>
 
-              <div className="rounded-md border">
+              <div className="overflow-auto rounded-md border">
                 <Table className="min-w-[700px]">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Product</TableHead>
-                      <TableHead>SKU</TableHead>
-                      <TableHead className="text-right">
-                        Qty
+                      <TableHead>
+                        {t(
+                          "transactions.detail.product",
+                        )}
                       </TableHead>
-                      <TableHead className="text-right">
-                        Unit Price
+
+                      <TableHead>
+                        {t(
+                          "transactions.detail.sku",
+                        )}
                       </TableHead>
+
                       <TableHead className="text-right">
-                        Subtotal
+                        {t(
+                          "transactions.detail.quantity",
+                        )}
+                      </TableHead>
+
+                      <TableHead className="text-right">
+                        {t(
+                          "transactions.detail.unitPrice",
+                        )}
+                      </TableHead>
+
+                      <TableHead className="text-right">
+                        {t(
+                          "transactions.detail.subtotal",
+                        )}
                       </TableHead>
                     </TableRow>
                   </TableHeader>
 
                   <TableBody>
-                    {(transaction.items ?? []).map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="font-medium">
-                          {item.product_name}
-                        </TableCell>
+                    {(transaction.items ?? []).map(
+                      (item) => (
+                        <TableRow key={item.id}>
+                          <TableCell className="font-medium">
+                            {item.product_name}
+                          </TableCell>
 
-                        <TableCell>
-                          {item.product_sku}
-                        </TableCell>
+                          <TableCell>
+                            {item.product_sku}
+                          </TableCell>
 
-                        <TableCell className="text-right">
-                          {item.quantity}
-                        </TableCell>
+                          <TableCell className="text-right">
+                            {formatNumber(
+                              item.quantity,
+                            )}
+                          </TableCell>
 
-                        <TableCell className="text-right">
-                          {formatCurrency(item.unit_price)}
-                        </TableCell>
+                          <TableCell className="text-right">
+                            {formatCurrency(
+                              item.unit_price,
+                            )}
+                          </TableCell>
 
-                        <TableCell className="text-right font-medium">
-                          {formatCurrency(item.subtotal)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          <TableCell className="text-right font-medium">
+                            {formatCurrency(
+                              item.subtotal,
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ),
+                    )}
                   </TableBody>
                 </Table>
               </div>
             </div>
 
             <div>
-              <p className="text-sm font-medium">Note</p>
+              <p className="text-sm font-medium">
+                {t(
+                  "transactions.detail.note",
+                )}
+              </p>
 
               <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">
                 {transaction.note || "-"}

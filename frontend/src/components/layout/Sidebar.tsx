@@ -6,47 +6,50 @@ import {
   Settings,
   ShoppingCart,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 
 const menus = [
   {
-    title: "Dashboard",
+    titleKey: "navigation.dashboard",
     icon: LayoutDashboard,
     href: "/",
   },
   {
-    title: "Products",
+    titleKey: "navigation.products",
     icon: Package,
     href: "/products",
   },
   {
-    title: "Inventory",
+    titleKey: "navigation.inventory",
     icon: Boxes,
     href: "/inventory",
   },
   {
-    title: "Transactions",
+    titleKey: "navigation.transactions",
     icon: ShoppingCart,
     href: "/transactions",
   },
   {
-    title: "Reports",
+    titleKey: "navigation.reports",
     icon: BarChart3,
     href: "/reports/sales",
   },
   {
-    title: "Settings",
+    titleKey: "navigation.settings",
     icon: Settings,
     href: "/settings",
   },
-];
+] as const;
 
 export default function Sidebar() {
+  const { t } = useTranslation();
+
   return (
     <aside className="w-64 border-r bg-background">
       <div className="border-b p-6">
         <h1 className="text-xl font-bold">
-          Tobacco POS
+          {t("common.appName")}
         </h1>
       </div>
 
@@ -56,7 +59,7 @@ export default function Sidebar() {
 
           return (
             <NavLink
-              key={menu.title}
+              key={menu.href}
               to={menu.href}
               className={({ isActive }) =>
                 `flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
@@ -68,7 +71,7 @@ export default function Sidebar() {
             >
               <Icon className="h-5 w-5" />
 
-              {menu.title}
+              {t(menu.titleKey)}
             </NavLink>
           );
         })}

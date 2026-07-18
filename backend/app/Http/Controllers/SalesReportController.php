@@ -87,6 +87,9 @@ class SalesReportController extends Controller
             ->values();
 
         $transactions = (clone $transactionsQuery)
+            ->with([
+                'items:id,transaction_id,product_name,product_sku,quantity,unit_price,subtotal',
+            ])
             ->withSum(
                 'items as products_sold',
                 'quantity'
@@ -124,6 +127,28 @@ class SalesReportController extends Controller
                         'products_sold' => (int) (
                             $transaction->products_sold ?? 0
                         ),
+                        'items' => $transaction->items
+                            ->map(function (TransactionItem $item) {
+                                return [
+                                    'id' => $item->id,
+                                    'product_name' => $item->product_name,
+                                    'product_sku' => $item->product_sku,
+                                    'quantity' => (int) $item->quantity,
+                                    'unit_price' => number_format(
+                                        (float) $item->unit_price,
+                                        2,
+                                        '.',
+                                        ''
+                                    ),
+                                    'subtotal' => number_format(
+                                        (float) $item->subtotal,
+                                        2,
+                                        '.',
+                                        ''
+                                    ),
+                                ];
+                            })
+                            ->values(),
                         'note' => $transaction->note,
                         'created_at' => $transaction->created_at?->toISOString(),
                     ];

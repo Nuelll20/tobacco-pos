@@ -1,13 +1,51 @@
 import { z } from "zod";
 
 export const productSchema = z.object({
-  sku: z.string().min(1, "SKU is required"),
-  name: z.string().min(1, "Product name is required"),
-  purchase_price: z.number().min(1, "Purchase price is required"),
-  selling_price: z.number().min(1, "Selling price is required"),
-  stock: z.number().min(0),
-  minimum_stock: z.number().min(0),
+  sku: z
+    .string()
+    .min(
+      1,
+      "products.validation.skuRequired",
+    ),
+
+  name: z
+    .string()
+    .min(
+      1,
+      "products.validation.nameRequired",
+    ),
+
+  purchase_price: z
+    .number()
+    .min(
+      1,
+      "products.validation.purchasePriceRequired",
+    ),
+
+  selling_price: z
+    .number()
+    .min(
+      1,
+      "products.validation.sellingPriceRequired",
+    ),
+
+  stock: z
+    .number()
+    .min(
+      0,
+      "products.validation.stockMinimum",
+    ),
+
+  minimum_stock: z
+    .number()
+    .min(
+      0,
+      "products.validation.minimumStockMinimum",
+    ),
+
   is_active: z.boolean(),
 });
 
-export type ProductFormData = z.infer<typeof productSchema>;
+export type ProductFormData = z.infer<
+  typeof productSchema
+>;

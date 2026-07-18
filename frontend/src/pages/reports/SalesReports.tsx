@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import SalesReportPagination from "@/components/reports/SalesReportPagination";
 import SalesReportSummaryCards from "@/components/reports/SalesReportSummaryCards";
@@ -22,6 +23,8 @@ import type {
 } from "@/types/transaction";
 
 export default function SalesReports() {
+  const { t } = useTranslation();
+
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState("");
@@ -69,7 +72,9 @@ export default function SalesReports() {
     setPage(1);
   }
 
-  function handleStartDateChange(value: string) {
+  function handleStartDateChange(
+    value: string,
+  ) {
     setStartDate(value);
 
     if (
@@ -87,11 +92,11 @@ export default function SalesReports() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">
-          Sales Reports
+          {t("reports.title")}
         </h1>
 
         <p className="mt-2 text-muted-foreground">
-          Review sales performance, top products, and transaction history.
+          {t("reports.description")}
         </p>
       </div>
 
@@ -123,20 +128,20 @@ export default function SalesReports() {
       {isLoading ? (
         <>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {Array.from({ length: 4 }).map(
-              (_, index) => (
-                <Card key={index}>
-                  <CardHeader className="space-y-2 pb-2">
-                    <Skeleton className="h-4 w-28" />
-                  </CardHeader>
+            {Array.from({
+              length: 4,
+            }).map((_, index) => (
+              <Card key={index}>
+                <CardHeader className="space-y-2 pb-2">
+                  <Skeleton className="h-4 w-28" />
+                </CardHeader>
 
-                  <CardContent className="space-y-2">
-                    <Skeleton className="h-8 w-36" />
-                    <Skeleton className="h-3 w-44 max-w-full" />
-                  </CardContent>
-                </Card>
-              )
-            )}
+                <CardContent className="space-y-2">
+                  <Skeleton className="h-8 w-36" />
+                  <Skeleton className="h-3 w-44 max-w-full" />
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
           <div className="grid gap-6 xl:grid-cols-3">
@@ -158,14 +163,14 @@ export default function SalesReports() {
               </CardHeader>
 
               <CardContent className="space-y-3">
-                {Array.from({ length: 5 }).map(
-                  (_, index) => (
-                    <Skeleton
-                      key={index}
-                      className="h-16 w-full"
-                    />
-                  )
-                )}
+                {Array.from({
+                  length: 5,
+                }).map((_, index) => (
+                  <Skeleton
+                    key={index}
+                    className="h-16 w-full"
+                  />
+                ))}
               </CardContent>
             </Card>
           </div>
@@ -176,11 +181,13 @@ export default function SalesReports() {
             <AlertCircle className="mb-4 size-10 text-destructive" />
 
             <h2 className="text-lg font-semibold">
-              Failed to load sales report
+              {t("reports.error.title")}
             </h2>
 
             <p className="mt-2 max-w-md text-sm text-muted-foreground">
-              The sales report could not be loaded. Check the connection and try again.
+              {t(
+                "reports.error.description",
+              )}
             </p>
 
             <Button
@@ -190,7 +197,7 @@ export default function SalesReports() {
                 void refetch();
               }}
             >
-              Try Again
+              {t("reports.error.retry")}
             </Button>
           </CardContent>
         </Card>
@@ -204,11 +211,15 @@ export default function SalesReports() {
             <Card className="min-w-0 xl:col-span-2">
               <CardHeader>
                 <CardTitle>
-                  Sales Transactions
+                  {t(
+                    "reports.transactions.title",
+                  )}
                 </CardTitle>
 
                 <CardDescription>
-                  Detailed transactions matching the selected report filters.
+                  {t(
+                    "reports.transactions.description",
+                  )}
                 </CardDescription>
               </CardHeader>
 

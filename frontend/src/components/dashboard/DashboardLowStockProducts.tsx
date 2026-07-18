@@ -2,6 +2,7 @@ import {
   AlertTriangle,
   PackageCheck,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -23,15 +24,28 @@ type DashboardLowStockProductsProps = {
 export default function DashboardLowStockProducts({
   data,
 }: DashboardLowStockProductsProps) {
+  const { t, i18n } = useTranslation();
+
+  const locale =
+    i18n.resolvedLanguage === "en"
+      ? "en-US"
+      : "id-ID";
+
+  function formatNumber(value: number) {
+    return new Intl.NumberFormat(
+      locale,
+    ).format(value);
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          Low Stock Products
+          {t("dashboard.lowStock.title")}
         </CardTitle>
 
         <CardDescription>
-          Active products that need stock replenishment.
+          {t("dashboard.lowStock.description")}
         </CardDescription>
       </CardHeader>
 
@@ -41,11 +55,15 @@ export default function DashboardLowStockProducts({
             <PackageCheck className="mb-3 size-8 text-muted-foreground" />
 
             <p className="text-sm font-medium">
-              Stock levels are healthy
+              {t(
+                "dashboard.lowStock.healthyTitle",
+              )}
             </p>
 
             <p className="mt-1 text-xs text-muted-foreground">
-              No active products are currently below their minimum stock.
+              {t(
+                "dashboard.lowStock.healthyDescription",
+              )}
             </p>
           </div>
         ) : (
@@ -72,22 +90,44 @@ export default function DashboardLowStockProducts({
                       className="truncate text-xs text-muted-foreground"
                       title={product.sku}
                     >
-                      SKU: {product.sku}
+                      {t("dashboard.lowStock.sku")}:{" "}
+                      {product.sku}
                     </p>
                   </div>
                 </div>
 
                 <div className="shrink-0 text-right">
                   <Badge variant="destructive">
-                    Stock {product.stock}
+                    {t(
+                      "dashboard.lowStock.stock",
+                      {
+                        count: formatNumber(
+                          product.stock,
+                        ),
+                      },
+                    )}
                   </Badge>
 
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Minimum {product.minimum_stock}
+                    {t(
+                      "dashboard.lowStock.minimum",
+                      {
+                        count: formatNumber(
+                          product.minimum_stock,
+                        ),
+                      },
+                    )}
                   </p>
 
                   <p className="text-xs font-medium text-destructive">
-                    Short {product.stock_shortage}
+                    {t(
+                      "dashboard.lowStock.shortage",
+                      {
+                        count: formatNumber(
+                          product.stock_shortage,
+                        ),
+                      },
+                    )}
                   </p>
                 </div>
               </div>

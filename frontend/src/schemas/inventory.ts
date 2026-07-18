@@ -4,41 +4,64 @@ export const inventoryMovementSchema = z
   .object({
     product_id: z
       .number({
-        message: "Product is required.",
+        message:
+          "inventory.validation.productRequired",
       })
-      .min(1, "Product is required."),
+      .min(
+        1,
+        "inventory.validation.productRequired",
+      ),
 
-    type: z.enum(["stock_in", "stock_out", "adjustment"], {
-      message: "Movement type is required.",
-    }),
+    type: z.enum(
+      [
+        "stock_in",
+        "stock_out",
+        "adjustment",
+      ],
+      {
+        message:
+          "inventory.validation.movementTypeRequired",
+      },
+    ),
 
     quantity: z
       .number({
-        message: "Quantity is required.",
+        message:
+          "inventory.validation.quantityRequired",
       })
-      .min(0, "Quantity cannot be negative."),
+      .min(
+        0,
+        "inventory.validation.quantityNegative",
+      ),
 
     reference_no: z
       .string()
-      .max(255, "Reference number is too long.")
+      .max(
+        255,
+        "inventory.validation.referenceTooLong",
+      )
       .optional()
       .nullable(),
 
-    note: z.string().optional().nullable(),
+    note: z
+      .string()
+      .optional()
+      .nullable(),
   })
-  .superRefine((data, ctx) => {
+  .superRefine((data, context) => {
     if (
-      (data.type === "stock_in" || data.type === "stock_out") &&
+      (data.type === "stock_in" ||
+        data.type === "stock_out") &&
       data.quantity < 1
     ) {
-      ctx.addIssue({
+      context.addIssue({
         code: "custom",
         path: ["quantity"],
-        message: "Quantity must be at least 1 for stock in and stock out.",
+        message:
+          "inventory.validation.quantityAtLeastOne",
       });
     }
   });
 
-export type InventoryMovementFormData = z.infer<
-  typeof inventoryMovementSchema
->;
+export type InventoryMovementFormData =
+  z.infer<typeof inventoryMovementSchema>;

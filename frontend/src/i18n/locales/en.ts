@@ -12,6 +12,7 @@ const en = {
   navigation: {
     dashboard: "Dashboard",
     products: "Products",
+    suppliers: "Suppliers",
     inventory: "Inventory",
     transactions: "Transactions",
     reports: "Reports",
@@ -93,6 +94,7 @@ const en = {
         date: "Date",
         payment: "Payment",
         products: "Products",
+    suppliers: "Suppliers",
         total: "Total",
       },
     },
@@ -192,6 +194,87 @@ const en = {
     },
   },
 
+  suppliers: {
+    title: "Suppliers",
+    description: "Manage suppliers, distributors, and wholesalers that provide store inventory.",
+
+    toolbar: {
+      searchPlaceholder: "Search name, phone, address, or notes...",
+      statusLabel: "Filter supplier status",
+      allStatuses: "All Statuses",
+      active: "Active",
+      inactive: "Inactive",
+      addSupplier: "Add Supplier",
+    },
+
+    table: {
+      name: "Supplier Name",
+      phone: "Phone",
+      address: "Address",
+      status: "Status",
+      actions: "Actions",
+      empty: "No suppliers found.",
+      active: "Active",
+      inactive: "Inactive",
+      editAria: "Edit {{name}}",
+      deactivateAria: "Deactivate {{name}}",
+    },
+
+    pagination: {
+      showing: "Showing {{from}} to {{to}} of {{total}} suppliers",
+      rowsPerPage: "Rows per page",
+      previous: "Previous",
+      next: "Next",
+      page: "Page {{current}} of {{last}}",
+    },
+
+    dialog: {
+      addTitle: "Add Supplier",
+      editTitle: "Edit Supplier",
+      addDescription: "Fill in the information below to add a new supplier.",
+      editDescription: "Update this supplier's information and status.",
+    },
+
+    deactivateDialog: {
+      title: "Deactivate supplier?",
+      description: "{{name}} will no longer be available for new purchases, but its existing history will remain stored.",
+      fallbackName: "This supplier",
+      cancel: "Cancel",
+      confirm: "Deactivate",
+    },
+
+    form: {
+      name: "Supplier Name",
+      namePlaceholder: "Main Distributor Ltd.",
+      phone: "Phone Number",
+      phonePlaceholder: "0812-3456-7890",
+      address: "Address",
+      addressPlaceholder: "Enter the supplier address",
+      notes: "Notes",
+      notesPlaceholder: "Additional notes about this supplier",
+      active: "Active Supplier",
+      saving: "Saving...",
+      save: "Save Supplier",
+    },
+
+    error: {
+      title: "Failed to load suppliers",
+      description: "Supplier data could not be loaded. Check the connection and try again.",
+      retry: "Try Again",
+    },
+
+    toast: {
+      created: "Supplier added successfully.",
+      updated: "Supplier updated successfully.",
+      deactivated: "Supplier deactivated successfully.",
+    },
+
+    validation: {
+      nameRequired: "Supplier name is required.",
+      nameMaximum: "Supplier name cannot exceed 255 characters.",
+      phoneMaximum: "Phone number cannot exceed 50 characters.",
+    },
+  },
   inventory: {
     title: "Inventory",
     description: "Track stock in, stock out, adjustments, and movement history.",

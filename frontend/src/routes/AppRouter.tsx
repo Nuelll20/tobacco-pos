@@ -10,6 +10,7 @@ import NotFound from "@/pages/not-found/NotFound";
 import Products from "@/pages/products/Products";
 import SalesReports from "@/pages/reports/SalesReports";
 import Settings from "@/pages/settings/Settings";
+import Suppliers from "@/pages/suppliers/Suppliers";
 import Transactions from "@/pages/transactions/Transactions";
 import GuestRoute from "@/routes/GuestRoute";
 import ProtectedRoute from "@/routes/ProtectedRoute";
@@ -44,6 +45,11 @@ export default function AppRouter() {
             <Route
               path="/inventory"
               element={<Inventory />}
+            />
+
+            <Route
+              path="/suppliers"
+              element={<Suppliers />}
             />
 
             <Route

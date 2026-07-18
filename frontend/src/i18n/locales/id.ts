@@ -12,6 +12,7 @@ const id = {
   navigation: {
     dashboard: "Dasbor",
     products: "Produk",
+    suppliers: "Supplier",
     inventory: "Inventaris",
     transactions: "Transaksi",
     reports: "Laporan",
@@ -93,6 +94,7 @@ const id = {
         date: "Tanggal",
         payment: "Pembayaran",
         products: "Produk",
+    suppliers: "Supplier",
         total: "Total",
       },
     },
@@ -192,6 +194,87 @@ const id = {
     },
   },
 
+  suppliers: {
+    title: "Supplier",
+    description: "Kelola supplier, distributor, dan grosir yang memasok stok toko.",
+
+    toolbar: {
+      searchPlaceholder: "Cari nama, telepon, alamat, atau catatan...",
+      statusLabel: "Filter status supplier",
+      allStatuses: "Semua Status",
+      active: "Aktif",
+      inactive: "Tidak Aktif",
+      addSupplier: "Tambah Supplier",
+    },
+
+    table: {
+      name: "Nama Supplier",
+      phone: "Telepon",
+      address: "Alamat",
+      status: "Status",
+      actions: "Aksi",
+      empty: "Supplier tidak ditemukan.",
+      active: "Aktif",
+      inactive: "Tidak Aktif",
+      editAria: "Edit {{name}}",
+      deactivateAria: "Nonaktifkan {{name}}",
+    },
+
+    pagination: {
+      showing: "Menampilkan {{from}} sampai {{to}} dari {{total}} supplier",
+      rowsPerPage: "Baris per halaman",
+      previous: "Sebelumnya",
+      next: "Berikutnya",
+      page: "Halaman {{current}} dari {{last}}",
+    },
+
+    dialog: {
+      addTitle: "Tambah Supplier",
+      editTitle: "Edit Supplier",
+      addDescription: "Isi informasi berikut untuk menambahkan supplier baru.",
+      editDescription: "Perbarui informasi dan status supplier ini.",
+    },
+
+    deactivateDialog: {
+      title: "Nonaktifkan supplier?",
+      description: "{{name}} tidak dapat dipilih untuk pembelian baru, tetapi histori lamanya tetap tersimpan.",
+      fallbackName: "Supplier ini",
+      cancel: "Batal",
+      confirm: "Nonaktifkan",
+    },
+
+    form: {
+      name: "Nama Supplier",
+      namePlaceholder: "PT Distributor Utama",
+      phone: "Nomor Telepon",
+      phonePlaceholder: "0812-3456-7890",
+      address: "Alamat",
+      addressPlaceholder: "Masukkan alamat supplier",
+      notes: "Catatan",
+      notesPlaceholder: "Catatan tambahan mengenai supplier",
+      active: "Supplier Aktif",
+      saving: "Menyimpan...",
+      save: "Simpan Supplier",
+    },
+
+    error: {
+      title: "Gagal memuat supplier",
+      description: "Data supplier tidak dapat dimuat. Periksa koneksi lalu coba lagi.",
+      retry: "Coba Lagi",
+    },
+
+    toast: {
+      created: "Supplier berhasil ditambahkan.",
+      updated: "Supplier berhasil diperbarui.",
+      deactivated: "Supplier berhasil dinonaktifkan.",
+    },
+
+    validation: {
+      nameRequired: "Nama supplier wajib diisi.",
+      nameMaximum: "Nama supplier maksimal 255 karakter.",
+      phoneMaximum: "Nomor telepon maksimal 50 karakter.",
+    },
+  },
   inventory: {
     title: "Inventaris",
     description: "Pantau stok masuk, stok keluar, penyesuaian, dan riwayat pergerakan stok.",

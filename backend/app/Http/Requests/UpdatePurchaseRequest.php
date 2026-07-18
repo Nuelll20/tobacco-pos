@@ -1,0 +1,87 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class UpdatePurchaseRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'purchase_date' => [
+                'required',
+                'date',
+            ],
+
+            'supplier_id' => [
+                'required',
+                'integer',
+                Rule::exists('suppliers', 'id')
+                    ->where('is_active', true),
+            ],
+
+            'receipt_status' => [
+                'required',
+                Rule::in([
+                    'draft',
+                    'ordered',
+                ]),
+            ],
+
+            'paid_amount' => [
+                'required',
+                'numeric',
+                'decimal:0,2',
+                'min:0',
+                'max:9999999999.99',
+            ],
+
+            'notes' => [
+                'nullable',
+                'string',
+                'max:1000',
+            ],
+
+            'items' => [
+                'required',
+                'array',
+                'min:1',
+                'max:100',
+            ],
+
+            'items.*' => [
+                'required',
+                'array',
+            ],
+
+            'items.*.product_id' => [
+                'required',
+                'integer',
+                'distinct',
+                Rule::exists('products', 'id')
+                    ->where('is_active', true),
+            ],
+
+            'items.*.quantity' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+
+            'items.*.unit_cost' => [
+                'required',
+                'numeric',
+                'decimal:0,2',
+                'min:0',
+                'max:9999999999.99',
+            ],
+        ];
+    }
+}

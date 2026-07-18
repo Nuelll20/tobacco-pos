@@ -5,6 +5,7 @@ import {
   Package,
   Settings,
   ShoppingCart,
+  Truck,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
@@ -19,6 +20,11 @@ const menus = [
     titleKey: "navigation.products",
     icon: Package,
     href: "/products",
+  },
+  {
+    titleKey: "navigation.suppliers",
+    icon: Truck,
+    href: "/suppliers",
   },
   {
     titleKey: "navigation.inventory",

@@ -268,6 +268,401 @@ class SalesReportTest extends TestCase
             );
     }
 
+    public function test_sales_report_calculates_profit_and_margin_from_transaction_snapshots(): void
+    {
+        Sanctum::actingAs(
+            User::factory()->create()
+        );
+
+        $firstProduct = Product::factory()->create([
+            'sku' => 'PROFIT-001',
+            'name' => 'High Profit Product',
+            'purchase_price' => 20000,
+            'selling_price' => 50000,
+            'stock' => 20,
+            'is_active' => true,
+        ]);
+
+        $secondProduct = Product::factory()->create([
+            'sku' => 'PROFIT-002',
+            'name' => 'Volume Profit Product',
+            'purchase_price' => 10000,
+            'selling_price' => 20000,
+            'stock' => 20,
+            'is_active' => true,
+        ]);
+
+        $transactionResponse = $this->postJson(
+            '/api/transactions',
+            [
+                'payment_method' => 'cash',
+                'paid_amount' => 160000,
+                'note' => 'Profit report integration test',
+                'items' => [
+                    [
+                        'product_id' => $firstProduct->id,
+                        'quantity' => 2,
+                    ],
+                    [
+                        'product_id' => $secondProduct->id,
+                        'quantity' => 3,
+                    ],
+                ],
+            ]
+        );
+
+        $transactionResponse
+            ->assertCreated()
+            ->assertJsonPath(
+                'data.total_amount',
+                '160000.00'
+            )
+            ->assertJsonPath(
+                'data.items.0.unit_cost',
+                '20000.00'
+            )
+            ->assertJsonPath(
+                'data.items.0.cost_subtotal',
+                '40000.00'
+            )
+            ->assertJsonPath(
+                'data.items.0.gross_profit',
+                '60000.00'
+            )
+            ->assertJsonPath(
+                'data.items.1.unit_cost',
+                '10000.00'
+            )
+            ->assertJsonPath(
+                'data.items.1.cost_subtotal',
+                '30000.00'
+            )
+            ->assertJsonPath(
+                'data.items.1.gross_profit',
+                '30000.00'
+            );
+
+        $transactionId = $transactionResponse->json(
+            'data.id'
+        );
+
+        $reportResponse = $this->getJson(
+            '/api/reports/sales'
+        );
+
+        $reportResponse
+            ->assertOk()
+            ->assertJsonPath(
+                'data.summary.total_sales',
+                '160000.00'
+            )
+            ->assertJsonPath(
+                'data.summary.total_cost',
+                '70000.00'
+            )
+            ->assertJsonPath(
+                'data.summary.gross_profit',
+                '90000.00'
+            )
+            ->assertJsonPath(
+                'data.summary.gross_margin_percentage',
+                '56.25'
+            )
+            ->assertJsonPath(
+                'data.summary.profit_eligible_sales',
+                '160000.00'
+            )
+            ->assertJsonPath(
+                'data.summary.costed_items_count',
+                2
+            )
+            ->assertJsonPath(
+                'data.summary.missing_cost_items_count',
+                0
+            )
+            ->assertJsonPath(
+                'data.summary.profit_data_complete',
+                true
+            );
+
+        $reportResponse
+            ->assertJsonPath(
+                'data.top_products.0.product_id',
+                $secondProduct->id
+            )
+            ->assertJsonPath(
+                'data.top_products.0.quantity_sold',
+                3
+            )
+            ->assertJsonPath(
+                'data.top_products.0.total_cost',
+                '30000.00'
+            )
+            ->assertJsonPath(
+                'data.top_products.0.gross_profit',
+                '30000.00'
+            )
+            ->assertJsonPath(
+                'data.top_products.0.gross_margin_percentage',
+                '50.00'
+            )
+            ->assertJsonPath(
+                'data.top_products.0.profit_data_complete',
+                true
+            );
+
+        $reportResponse
+            ->assertJsonPath(
+                'data.most_profitable_products.0.product_id',
+                $firstProduct->id
+            )
+            ->assertJsonPath(
+                'data.most_profitable_products.0.quantity_sold',
+                2
+            )
+            ->assertJsonPath(
+                'data.most_profitable_products.0.total_sales',
+                '100000.00'
+            )
+            ->assertJsonPath(
+                'data.most_profitable_products.0.total_cost',
+                '40000.00'
+            )
+            ->assertJsonPath(
+                'data.most_profitable_products.0.gross_profit',
+                '60000.00'
+            )
+            ->assertJsonPath(
+                'data.most_profitable_products.0.gross_margin_percentage',
+                '60.00'
+            );
+
+        $reportResponse
+            ->assertJsonPath(
+                'data.transactions.data.0.id',
+                $transactionId
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.profit_eligible_sales',
+                '160000.00'
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.total_cost',
+                '70000.00'
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.gross_profit',
+                '90000.00'
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.gross_margin_percentage',
+                '56.25'
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.missing_cost_items_count',
+                0
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.profit_data_complete',
+                true
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.items.0.unit_cost',
+                '20000.00'
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.items.0.cost_subtotal',
+                '40000.00'
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.items.0.gross_profit',
+                '60000.00'
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.items.0.gross_margin_percentage',
+                '60.00'
+            )
+            ->assertJsonPath(
+                'data.transactions.data.0.items.0.profit_data_complete',
+                true
+            );
+    }
+    public function test_sales_report_marks_legacy_items_without_cost_snapshot_as_incomplete(): void
+    {
+        Sanctum::actingAs(
+            User::factory()->create()
+        );
+
+        $costedProduct = Product::factory()->create([
+            'sku' => 'COSTED-001',
+            'name' => 'Costed Product',
+            'purchase_price' => 20000,
+            'selling_price' => 50000,
+            'stock' => 10,
+            'is_active' => true,
+        ]);
+
+        $legacyProduct = Product::factory()->create([
+            'sku' => 'LEGACY-001',
+            'name' => 'Legacy Product',
+            'purchase_price' => 15000,
+            'selling_price' => 30000,
+            'stock' => 10,
+            'is_active' => true,
+        ]);
+
+        $costedResponse = $this->postJson(
+            '/api/transactions',
+            [
+                'payment_method' => 'cash',
+                'paid_amount' => 50000,
+                'items' => [
+                    [
+                        'product_id' => $costedProduct->id,
+                        'quantity' => 1,
+                    ],
+                ],
+            ]
+        );
+
+        $costedResponse->assertCreated();
+
+        $legacyTransaction = Transaction::create([
+            'transaction_no' => 'TRX-LEGACY-001',
+            'total_amount' => 60000,
+            'payment_method' => 'cash',
+            'paid_amount' => 60000,
+            'change_amount' => 0,
+            'note' => 'Legacy transaction without cost snapshot',
+        ]);
+
+        TransactionItem::create([
+            'transaction_id' => $legacyTransaction->id,
+            'product_id' => $legacyProduct->id,
+            'product_name' => $legacyProduct->name,
+            'product_sku' => $legacyProduct->sku,
+            'quantity' => 2,
+            'unit_price' => 30000,
+            'subtotal' => 60000,
+            'unit_cost' => null,
+            'cost_subtotal' => null,
+            'gross_profit' => null,
+        ]);
+
+        $response = $this->getJson(
+            '/api/reports/sales'
+        );
+
+        $response
+            ->assertOk()
+            ->assertJsonPath(
+                'data.summary.total_sales',
+                '110000.00'
+            )
+            ->assertJsonPath(
+                'data.summary.profit_eligible_sales',
+                '50000.00'
+            )
+            ->assertJsonPath(
+                'data.summary.total_cost',
+                '20000.00'
+            )
+            ->assertJsonPath(
+                'data.summary.gross_profit',
+                '30000.00'
+            )
+            ->assertJsonPath(
+                'data.summary.gross_margin_percentage',
+                '60.00'
+            )
+            ->assertJsonPath(
+                'data.summary.costed_items_count',
+                1
+            )
+            ->assertJsonPath(
+                'data.summary.missing_cost_items_count',
+                1
+            )
+            ->assertJsonPath(
+                'data.summary.profit_data_complete',
+                false
+            );
+
+        $legacyRow = collect(
+            $response->json(
+                'data.transactions.data'
+            )
+        )->firstWhere(
+            'id',
+            $legacyTransaction->id
+        );
+
+        $this->assertNotNull(
+            $legacyRow
+        );
+
+        $this->assertSame(
+            '0.00',
+            $legacyRow['profit_eligible_sales']
+        );
+
+        $this->assertSame(
+            '0.00',
+            $legacyRow['total_cost']
+        );
+
+        $this->assertSame(
+            '0.00',
+            $legacyRow['gross_profit']
+        );
+
+        $this->assertSame(
+            1,
+            $legacyRow['missing_cost_items_count']
+        );
+
+        $this->assertFalse(
+            $legacyRow['profit_data_complete']
+        );
+
+        $this->assertNull(
+            $legacyRow['items'][0]['unit_cost']
+        );
+
+        $this->assertNull(
+            $legacyRow['items'][0]['cost_subtotal']
+        );
+
+        $this->assertNull(
+            $legacyRow['items'][0]['gross_profit']
+        );
+
+        $this->assertNull(
+            $legacyRow['items'][0]['gross_margin_percentage']
+        );
+
+        $this->assertFalse(
+            $legacyRow['items'][0]['profit_data_complete']
+        );
+
+        $mostProfitableProductIds = collect(
+            $response->json(
+                'data.most_profitable_products'
+            )
+        )->pluck('product_id');
+
+        $this->assertTrue(
+            $mostProfitableProductIds->contains(
+                $costedProduct->id
+            )
+        );
+
+        $this->assertFalse(
+            $mostProfitableProductIds->contains(
+                $legacyProduct->id
+            )
+        );
+    }
     public function test_sales_report_applies_search_payment_and_date_filters(): void
     {
         Sanctum::actingAs(

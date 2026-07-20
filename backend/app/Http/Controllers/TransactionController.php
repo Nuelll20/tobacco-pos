@@ -103,14 +103,39 @@ class TransactionController extends Controller
                     ]);
                 }
 
-                $unitPrice = round((float) $product->selling_price, 2);
-                $subtotal = round($unitPrice * $quantity, 2);
+                $unitPrice = round(
+                    (float) $product->selling_price,
+                    2
+                );
+
+                $unitCost = round(
+                    (float) $product->purchase_price,
+                    2
+                );
+
+                $subtotal = round(
+                    $unitPrice * $quantity,
+                    2
+                );
+
+                $costSubtotal = round(
+                    $unitCost * $quantity,
+                    2
+                );
+
+                $grossProfit = round(
+                    $subtotal - $costSubtotal,
+                    2
+                );
 
                 $preparedItems[] = [
                     'product' => $product,
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice,
                     'subtotal' => $subtotal,
+                    'unit_cost' => $unitCost,
+                    'cost_subtotal' => $costSubtotal,
+                    'gross_profit' => $grossProfit,
                     'stock_before' => $stockBefore,
                     'stock_after' => $stockBefore - $quantity,
                 ];
@@ -167,6 +192,9 @@ class TransactionController extends Controller
                     'quantity' => $preparedItem['quantity'],
                     'unit_price' => $preparedItem['unit_price'],
                     'subtotal' => $preparedItem['subtotal'],
+                    'unit_cost' => $preparedItem['unit_cost'],
+                    'cost_subtotal' => $preparedItem['cost_subtotal'],
+                    'gross_profit' => $preparedItem['gross_profit'],
                 ]);
 
                 $product->update([

@@ -15,6 +15,7 @@ const en = {
     suppliers: "Suppliers",
     purchases: "Purchases",
     inventory: "Inventory",
+    stockOpnames: "Stock Opname",
     transactions: "Transactions",
     reports: "Reports",
     settings: "Settings",
@@ -387,7 +388,7 @@ const en = {
       product: "Product",
       loadingProducts: "Loading products...",
       selectProduct: "Select a product",
-      productOption: "{{name}} — {{sku}}",
+      productOption: "{{name}} â€” {{sku}}",
       quantity: "Quantity",
       unitCost: "Unit Cost",
       subtotal: "Subtotal",
@@ -748,6 +749,150 @@ const en = {
       emptyDescription: "Top-selling products will appear when transactions match the filters.",
       sku: "SKU: {{sku}}",
       sold: "{{count}} sold",
+    },
+  },
+  stockOpnames: {
+    title: "Stock Opname",
+    description: "Record physical stock counts and adjust inventory through a controlled process.",
+
+    statuses: {
+      draft: "Draft",
+      finalized: "Finalized",
+      cancelled: "Cancelled",
+    },
+
+    toolbar: {
+      create: "Create Stock Opname",
+      searchPlaceholder: "Search opname number, product, SKU, or notes...",
+      statusLabel: "Filter stock opname status",
+      allStatuses: "All Statuses",
+      dateFrom: "Start Date",
+      dateTo: "End Date",
+      reset: "Reset Filters",
+    },
+
+    form: {
+      countedAt: "Count Date",
+      note: "Notes",
+      notePlaceholder: "Add general stock opname notes...",
+      itemsTitle: "Product List",
+      itemsDescription: "Select products and enter the physical stock quantities found.",
+      addItem: "Add Product",
+      itemNumber: "Product {{number}}",
+      removeItem: "Remove product",
+      product: "Product",
+      loadingProducts: "Loading products...",
+      selectProduct: "Select a product",
+      systemStock: "System Stock",
+      countedStock: "Physical Stock",
+      itemNote: "Product Notes",
+      itemNotePlaceholder: "Add information about this product...",
+      saving: "Saving...",
+      saveDraft: "Save Draft",
+    },
+
+    validation: {
+      productRequired: "A product must be selected.",
+      countedStockRequired: "Physical stock is required.",
+      countedStockInteger: "Physical stock must be a whole number.",
+      countedStockNegative: "Physical stock cannot be negative.",
+      countedAtRequired: "The count date is required.",
+      itemsRequired: "At least one product must be added.",
+      duplicateProduct: "The same product cannot be selected more than once.",
+    },
+
+    toast: {
+      created: "Stock opname draft was created successfully.",
+      updated: "Stock opname draft was updated successfully.",
+      finalized: "Stock opname was finalized successfully.",
+      cancelled: "Stock opname was cancelled successfully.",
+    },
+
+    createDialog: {
+      title: "Create Stock Opname",
+      description: "Enter the physical stock counts for one or more products.",
+    },
+
+    editDialog: {
+      title: "Edit Stock Opname Draft",
+      description: "Update the date, notes, products, or physical stock quantities.",
+      loading: "Loading stock opname details...",
+      loadError: "The stock opname details could not be loaded.",
+      notEditable: "This stock opname cannot be edited because its status is not draft.",
+    },
+
+    detailDialog: {
+      title: "Stock Opname Details",
+      description: "View the summary and count results for each product.",
+      loading: "Loading stock opname details...",
+      loadError: "The stock opname details could not be loaded.",
+    },
+
+    actions: {
+      retry: "Try Again",
+      view: "View Details",
+      edit: "Edit Draft",
+      finalize: "Finalize",
+      cancel: "Cancel",
+    },
+
+    detail: {
+      opnameNo: "Opname Number",
+      status: "Status",
+      countedAt: "Count Date",
+      finalizedAt: "Finalized At",
+      note: "Notes",
+      itemsTitle: "Product Count Results",
+      itemsDescription: "{{count}} products are recorded in this stock opname.",
+    },
+
+    table: {
+      opnameNo: "Opname Number",
+      countedAt: "Count Date",
+      status: "Status",
+      itemsCount: "Products",
+      product: "Product",
+      sku: "SKU",
+      systemStock: "System Stock",
+      countedStock: "Physical Stock",
+      difference: "Difference",
+      note: "Notes",
+      actions: "Actions",
+      empty: "No stock opname data is available yet.",
+      emptyItems: "There are no products in this stock opname.",
+    },
+
+    error: {
+      title: "Failed to load stock opnames",
+      description: "The stock opname data could not be loaded. Check the connection and try again.",
+    },
+
+    pagination: {
+      showing: "Showing {{from}}–{{to}} of {{total}} records",
+      rowsPerPage: "Rows per page",
+      page: "Page {{current}} of {{last}}",
+      previousPage: "Previous page",
+      nextPage: "Next page",
+    },
+
+    actionDialog: {
+      opnameNo: "Opname Number",
+      close: "Go Back",
+    },
+
+    finalizeDialog: {
+      title: "Finalize Stock Opname",
+      description: "Finalize {{opnameNo}} and adjust product stock according to the count results?",
+      warning: "After finalization, the data cannot be edited or cancelled. Products with differences will create adjustments in the inventory history.",
+      confirm: "Yes, Finalize",
+      finalizing: "Finalizing...",
+    },
+
+    cancelDialog: {
+      title: "Cancel Stock Opname",
+      description: "Cancel {{opnameNo}}? This action will not change product stock.",
+      confirm: "Yes, Cancel",
+      cancelling: "Cancelling...",
     },
   },
   auth: {

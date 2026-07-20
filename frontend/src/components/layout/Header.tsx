@@ -9,6 +9,7 @@ const pageTitleKeys = {
   "/": "navigation.dashboard",
   "/products": "navigation.products",
   "/inventory": "navigation.inventory",
+  "/stock-opnames": "navigation.stockOpnames",
   "/transactions": "navigation.transactions",
   "/reports/sales": "navigation.reports",
   "/settings": "navigation.settings",

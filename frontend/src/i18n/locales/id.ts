@@ -15,6 +15,7 @@ const id = {
     suppliers: "Supplier",
     purchases: "Pembelian",
     inventory: "Inventaris",
+    stockOpnames: "Stock Opname",
     transactions: "Transaksi",
     reports: "Laporan",
     settings: "Pengaturan",
@@ -387,7 +388,7 @@ const id = {
       product: "Produk",
       loadingProducts: "Memuat produk...",
       selectProduct: "Pilih produk",
-      productOption: "{{name}} — {{sku}}",
+      productOption: "{{name}} â€” {{sku}}",
       quantity: "Jumlah",
       unitCost: "Harga Beli",
       subtotal: "Subtotal",
@@ -748,6 +749,150 @@ const id = {
       emptyDescription: "Produk terlaris akan muncul saat terdapat transaksi yang sesuai dengan filter.",
       sku: "SKU: {{sku}}",
       sold: "{{count}} terjual",
+    },
+  },
+  stockOpnames: {
+    title: "Stock Opname",
+    description: "Catat hasil penghitungan stok fisik dan sesuaikan persediaan secara terkontrol.",
+
+    statuses: {
+      draft: "Draft",
+      finalized: "Difinalisasi",
+      cancelled: "Dibatalkan",
+    },
+
+    toolbar: {
+      create: "Buat Stock Opname",
+      searchPlaceholder: "Cari nomor opname, produk, SKU, atau catatan...",
+      statusLabel: "Filter status stock opname",
+      allStatuses: "Semua Status",
+      dateFrom: "Tanggal Awal",
+      dateTo: "Tanggal Akhir",
+      reset: "Reset Filter",
+    },
+
+    form: {
+      countedAt: "Tanggal Penghitungan",
+      note: "Catatan",
+      notePlaceholder: "Tambahkan catatan umum stock opname...",
+      itemsTitle: "Daftar Produk",
+      itemsDescription: "Pilih produk dan masukkan jumlah stok fisik yang ditemukan.",
+      addItem: "Tambah Produk",
+      itemNumber: "Produk {{number}}",
+      removeItem: "Hapus produk",
+      product: "Produk",
+      loadingProducts: "Memuat produk...",
+      selectProduct: "Pilih produk",
+      systemStock: "Stok Sistem",
+      countedStock: "Stok Fisik",
+      itemNote: "Catatan Produk",
+      itemNotePlaceholder: "Tambahkan keterangan untuk produk ini...",
+      saving: "Menyimpan...",
+      saveDraft: "Simpan Draft",
+    },
+
+    validation: {
+      productRequired: "Produk wajib dipilih.",
+      countedStockRequired: "Stok fisik wajib diisi.",
+      countedStockInteger: "Stok fisik harus berupa bilangan bulat.",
+      countedStockNegative: "Stok fisik tidak boleh negatif.",
+      countedAtRequired: "Tanggal penghitungan wajib diisi.",
+      itemsRequired: "Minimal satu produk harus ditambahkan.",
+      duplicateProduct: "Produk yang sama tidak boleh dipilih lebih dari satu kali.",
+    },
+
+    toast: {
+      created: "Draft stock opname berhasil dibuat.",
+      updated: "Draft stock opname berhasil diperbarui.",
+      finalized: "Stock opname berhasil difinalisasi.",
+      cancelled: "Stock opname berhasil dibatalkan.",
+    },
+
+    createDialog: {
+      title: "Buat Stock Opname",
+      description: "Masukkan hasil penghitungan stok fisik untuk satu atau beberapa produk.",
+    },
+
+    editDialog: {
+      title: "Edit Draft Stock Opname",
+      description: "Perbarui tanggal, catatan, produk, atau jumlah stok fisik.",
+      loading: "Memuat detail stock opname...",
+      loadError: "Detail stock opname tidak dapat dimuat.",
+      notEditable: "Stock opname ini tidak dapat diedit karena statusnya bukan draft.",
+    },
+
+    detailDialog: {
+      title: "Detail Stock Opname",
+      description: "Lihat ringkasan dan hasil penghitungan setiap produk.",
+      loading: "Memuat detail stock opname...",
+      loadError: "Detail stock opname tidak dapat dimuat.",
+    },
+
+    actions: {
+      retry: "Coba Lagi",
+      view: "Lihat Detail",
+      edit: "Edit Draft",
+      finalize: "Finalisasi",
+      cancel: "Batalkan",
+    },
+
+    detail: {
+      opnameNo: "Nomor Opname",
+      status: "Status",
+      countedAt: "Tanggal Penghitungan",
+      finalizedAt: "Waktu Finalisasi",
+      note: "Catatan",
+      itemsTitle: "Hasil Penghitungan Produk",
+      itemsDescription: "{{count}} produk tercatat dalam stock opname ini.",
+    },
+
+    table: {
+      opnameNo: "Nomor Opname",
+      countedAt: "Tanggal Penghitungan",
+      status: "Status",
+      itemsCount: "Jumlah Produk",
+      product: "Produk",
+      sku: "SKU",
+      systemStock: "Stok Sistem",
+      countedStock: "Stok Fisik",
+      difference: "Selisih",
+      note: "Catatan",
+      actions: "Aksi",
+      empty: "Belum ada data stock opname.",
+      emptyItems: "Tidak ada produk dalam stock opname ini.",
+    },
+
+    error: {
+      title: "Gagal memuat stock opname",
+      description: "Data stock opname tidak dapat dimuat. Periksa koneksi lalu coba lagi.",
+    },
+
+    pagination: {
+      showing: "Menampilkan {{from}}–{{to}} dari {{total}} data",
+      rowsPerPage: "Baris per halaman",
+      page: "Halaman {{current}} dari {{last}}",
+      previousPage: "Halaman sebelumnya",
+      nextPage: "Halaman berikutnya",
+    },
+
+    actionDialog: {
+      opnameNo: "Nomor Opname",
+      close: "Kembali",
+    },
+
+    finalizeDialog: {
+      title: "Finalisasi Stock Opname",
+      description: "Finalisasi {{opnameNo}} dan sesuaikan stok produk berdasarkan hasil penghitungan?",
+      warning: "Setelah difinalisasi, data tidak dapat diedit atau dibatalkan. Produk yang memiliki selisih akan menghasilkan adjustment pada riwayat inventaris.",
+      confirm: "Ya, Finalisasi",
+      finalizing: "Memfinalisasi...",
+    },
+
+    cancelDialog: {
+      title: "Batalkan Stock Opname",
+      description: "Batalkan {{opnameNo}}? Tindakan ini tidak akan mengubah stok produk.",
+      confirm: "Ya, Batalkan",
+      cancelling: "Membatalkan...",
     },
   },
   auth: {

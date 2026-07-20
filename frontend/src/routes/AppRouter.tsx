@@ -10,6 +10,7 @@ import NotFound from "@/pages/not-found/NotFound";
 import Products from "@/pages/products/Products";
 import SalesReports from "@/pages/reports/SalesReports";
 import Settings from "@/pages/settings/Settings";
+import StockOpnames from "@/pages/stock-opnames/StockOpnames";
 import Suppliers from "@/pages/suppliers/Suppliers";
 import Purchases from "@/pages/purchases/Purchases";
 import Transactions from "@/pages/transactions/Transactions";
@@ -46,6 +47,10 @@ export default function AppRouter() {
             <Route
               path="/inventory"
               element={<Inventory />}
+            />
+            <Route
+              path="/stock-opnames"
+              element={<StockOpnames />}
             />
 
             <Route

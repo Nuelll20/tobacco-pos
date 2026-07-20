@@ -1,4 +1,5 @@
 import {
+
   BarChart3,
   Boxes,
   LayoutDashboard,
@@ -6,6 +7,7 @@ import {
   Settings,
   ShoppingCart,
   Truck,
+  ShoppingBasket,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
@@ -25,6 +27,11 @@ const menus = [
     titleKey: "navigation.suppliers",
     icon: Truck,
     href: "/suppliers",
+  },
+  {
+    titleKey: "navigation.purchases",
+    href: "/purchases",
+    icon: ShoppingBasket,
   },
   {
     titleKey: "navigation.inventory",

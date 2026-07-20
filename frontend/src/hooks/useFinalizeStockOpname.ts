@@ -4,6 +4,9 @@ import {
 } from "@tanstack/react-query";
 
 import {
+  lowStockNotificationQueryKey,
+} from "@/hooks/useLowStockNotifications";
+import {
   finalizeStockOpname,
 } from "@/services/stock-opname.service";
 
@@ -34,6 +37,15 @@ export function useFinalizeStockOpname() {
         queryKey: [
           "inventory-movements",
         ],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey:
+          lowStockNotificationQueryKey,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard"],
       });
     },
   });

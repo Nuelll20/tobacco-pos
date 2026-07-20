@@ -1,15 +1,26 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
-import { createTransaction } from "@/services/transaction.service";
+import {
+  lowStockNotificationQueryKey,
+} from "@/hooks/useLowStockNotifications";
+import {
+  createTransaction,
+} from "@/services/transaction.service";
 
-import type { TransactionPayload } from "@/types/transaction";
+import type {
+  TransactionPayload,
+} from "@/types/transaction";
 
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: TransactionPayload) =>
-      createTransaction(payload),
+    mutationFn: (
+      payload: TransactionPayload,
+    ) => createTransaction(payload),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -21,7 +32,18 @@ export function useCreateTransaction() {
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["inventory-movements"],
+        queryKey: [
+          "inventory-movements",
+        ],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey:
+          lowStockNotificationQueryKey,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard"],
       });
     },
   });

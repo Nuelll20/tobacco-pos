@@ -388,7 +388,7 @@ const id = {
       product: "Produk",
       loadingProducts: "Memuat produk...",
       selectProduct: "Pilih produk",
-      productOption: "{{name}} â€” {{sku}}",
+      productOption: "{{name}} - {{sku}}",
       quantity: "Jumlah",
       unitCost: "Harga Beli",
       subtotal: "Subtotal",
@@ -751,6 +751,35 @@ const id = {
       sold: "{{count}} terjual",
     },
   },
+  lowStockNotifications: {
+    trigger: "{{count}} notifikasi stok rendah",
+    title: "Peringatan Stok",
+    description: "{{count}} produk perlu diperhatikan.",
+    loading: "Memuat notifikasi stok...",
+
+    statuses: {
+      outOfStock: "Stok Habis",
+      lowStock: "Stok Rendah",
+    },
+
+    stockSummary: "Stok {{stock}} · Minimum {{minimum}}",
+
+    empty: {
+      title: "Semua stok aman",
+      description: "Tidak ada produk aktif yang mencapai batas minimum stok.",
+    },
+
+    error: {
+      title: "Gagal memuat notifikasi",
+      description: "Data stok rendah tidak dapat dimuat. Silakan coba lagi.",
+    },
+
+    actions: {
+      retry: "Coba Lagi",
+      viewProducts: "Lihat Produk",
+      viewAll: "Lihat Semua {{count}} Produk",
+    },
+  },
   stockOpnames: {
     title: "Stock Opname",
     description: "Catat hasil penghitungan stok fisik dan sesuaikan persediaan secara terkontrol.",
@@ -868,7 +897,7 @@ const id = {
     },
 
     pagination: {
-      showing: "Menampilkan {{from}}–{{to}} dari {{total}} data",
+      showing: "Menampilkan {{from}}-{{to}} dari {{total}} data",
       rowsPerPage: "Baris per halaman",
       page: "Halaman {{current}} dari {{last}}",
       previousPage: "Halaman sebelumnya",

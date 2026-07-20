@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryMovementController;
+use App\Http\Controllers\LowStockNotificationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SalesReportController;
@@ -26,6 +27,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get(
         '/dashboard/summary',
         [DashboardController::class, 'summary']
+    );
+
+    Route::get(
+        '/notifications/low-stock',
+        [LowStockNotificationController::class, 'index']
     );
 
     Route::get(

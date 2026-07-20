@@ -23,6 +23,11 @@ class TransactionItemResource extends JsonResource
             'quantity' => $this->quantity,
             'unit_price' => $this->unit_price,
             'subtotal' => $this->subtotal,
+
+            'unit_cost' => $this->unit_cost,
+            'cost_subtotal' => $this->cost_subtotal,
+            'gross_profit' => $this->gross_profit,
+
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

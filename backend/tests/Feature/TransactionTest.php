@@ -118,6 +118,111 @@ class TransactionTest extends TestCase
         $this->assertSame(2, InventoryMovement::query()->count());
     }
 
+    public function test_transaction_stores_cost_and_profit_snapshot(): void
+    {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $product = Product::factory()->create([
+            'sku' => 'TEST-PROFIT-SNAPSHOT',
+            'name' => 'Profit Snapshot Product',
+            'purchase_price' => 18000,
+            'selling_price' => 25000,
+            'stock' => 10,
+            'is_active' => true,
+        ]);
+
+        $createResponse = $this->postJson(
+            '/api/transactions',
+            [
+                'payment_method' => 'cash',
+                'paid_amount' => 50000,
+                'note' => 'Profit snapshot test',
+                'items' => [
+                    [
+                        'product_id' => $product->id,
+                        'quantity' => 2,
+                    ],
+                ],
+            ]
+        );
+
+        $createResponse
+            ->assertCreated()
+            ->assertJsonPath(
+                'data.total_amount',
+                '50000.00'
+            )
+            ->assertJsonPath(
+                'data.items.0.unit_cost',
+                '18000.00'
+            )
+            ->assertJsonPath(
+                'data.items.0.cost_subtotal',
+                '36000.00'
+            )
+            ->assertJsonPath(
+                'data.items.0.gross_profit',
+                '14000.00'
+            );
+
+        $transactionId = $createResponse->json(
+            'data.id'
+        );
+
+        $this->assertDatabaseHas(
+            'transaction_items',
+            [
+                'transaction_id' => $transactionId,
+                'product_id' => $product->id,
+                'quantity' => 2,
+                'unit_price' => 25000,
+                'subtotal' => 50000,
+                'unit_cost' => 18000,
+                'cost_subtotal' => 36000,
+                'gross_profit' => 14000,
+            ]
+        );
+
+        $product->update([
+            'purchase_price' => 30000,
+        ]);
+
+        $detailResponse = $this->getJson(
+            "/api/transactions/{$transactionId}"
+        );
+
+        $detailResponse
+            ->assertOk()
+            ->assertJsonPath(
+                'data.items.0.unit_cost',
+                '18000.00'
+            )
+            ->assertJsonPath(
+                'data.items.0.cost_subtotal',
+                '36000.00'
+            )
+            ->assertJsonPath(
+                'data.items.0.gross_profit',
+                '14000.00'
+            );
+
+        $this->assertSame(
+            '30000.00',
+            $product->fresh()->purchase_price
+        );
+
+        $this->assertDatabaseHas(
+            'transaction_items',
+            [
+                'transaction_id' => $transactionId,
+                'unit_cost' => 18000,
+                'cost_subtotal' => 36000,
+                'gross_profit' => 14000,
+            ]
+        );
+    }
     public function test_transaction_fails_when_stock_is_not_enough_and_rolls_back_everything(): void
     {
         $user = User::factory()->create();

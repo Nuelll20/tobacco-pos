@@ -544,9 +544,14 @@ const id = {
       transactionNo: "Nomor Transaksi",
       date: "Tanggal",
       payment: "Pembayaran",
-      total: "Total",
+      total: "Penjualan",
+      cost: "HPP",
+      grossProfit: "Laba Kotor",
+      margin: "Margin",
       paid: "Dibayar",
       change: "Kembalian",
+      partialData: "Data parsial",
+      availableCostOnly: "Dari data HPP tersedia",
       note: "Catatan",
       actions: "Aksi",
       empty: "Transaksi tidak ditemukan.",
@@ -595,9 +600,14 @@ const id = {
       errorDescription: "Silakan coba muat kembali transaksi ini.",
       retry: "Coba Lagi",
       transactionNo: "Nomor Transaksi",
-      total: "Total",
+      total: "Penjualan",
+      cost: "HPP",
+      grossProfit: "Laba Kotor",
+      margin: "Margin",
       paid: "Dibayar",
       change: "Kembalian",
+      partialData: "Data parsial",
+      availableCostOnly: "Dari data HPP tersedia",
       purchasedItems: "Produk yang Dibeli",
       product: "Produk",
       sku: "SKU",
@@ -629,8 +639,8 @@ const id = {
     },
   },
   reports: {
-    title: "Laporan Penjualan",
-    description: "Tinjau performa penjualan, produk terlaris, dan riwayat transaksi.",
+    title: "Laporan Penjualan & Laba",
+    description: "Pantau penjualan, HPP, laba kotor, margin, produk terlaris, dan riwayat transaksi.",
 
     toolbar: {
       title: "Filter Laporan",
@@ -649,6 +659,23 @@ const id = {
         title: "Total Penjualan",
         description: "Pendapatan dari seluruh transaksi yang sesuai filter",
       },
+      totalCost: {
+        title: "Total HPP",
+        description: "Harga pokok barang terjual yang memiliki data biaya",
+      },
+      grossProfit: {
+        title: "Laba Kotor",
+        description: "Pendapatan dikurangi HPP dari data biaya yang tersedia",
+      },
+      grossMargin: {
+        title: "Margin Laba",
+        description: "Persentase laba kotor dari penjualan yang memiliki data HPP",
+      },
+      costDataWarning: {
+        title: "Sebagian data HPP belum tersedia",
+        description:
+          "{{missingCount}} item transaksi lama belum memiliki snapshot HPP. Perhitungan laba saat ini menggunakan {{costedCount}} item dengan total penjualan {{eligibleSales}}.",
+      },
       transactions: {
         title: "Transaksi",
         description: "Jumlah transaksi yang sesuai filter",
@@ -664,14 +691,14 @@ const id = {
     },
 
     error: {
-      title: "Gagal memuat laporan penjualan",
-      description: "Laporan penjualan tidak dapat dimuat. Periksa koneksi lalu coba lagi.",
+      title: "Gagal memuat laporan penjualan dan laba",
+      description: "Laporan penjualan dan laba tidak dapat dimuat. Periksa koneksi lalu coba lagi.",
       retry: "Coba Lagi",
     },
 
     transactions: {
-      title: "Transaksi Penjualan",
-      description: "Rincian transaksi yang sesuai dengan filter laporan yang dipilih.",
+      title: "Rincian Penjualan & Laba",
+      description: "Rincian penjualan, HPP, laba kotor, dan margin dari transaksi yang sesuai filter.",
     },
 
     table: {
@@ -680,9 +707,14 @@ const id = {
       payment: "Pembayaran",
       quantity: "Jumlah Produk",
       unitPrice: "Harga Produk",
-      total: "Total",
+      total: "Penjualan",
+      cost: "HPP",
+      grossProfit: "Laba Kotor",
+      margin: "Margin",
       paid: "Dibayar",
       change: "Kembalian",
+      partialData: "Data parsial",
+      availableCostOnly: "Dari data HPP tersedia",
       emptyTitle: "Transaksi penjualan tidak ditemukan",
       emptyDescription: "Sesuaikan filter laporan untuk menemukan transaksi yang sesuai.",
     },
@@ -693,6 +725,20 @@ const id = {
       page: "Halaman {{current}} dari {{last}}",
       previousPage: "Halaman sebelumnya",
       nextPage: "Halaman berikutnya",
+    },
+
+    mostProfitableProducts: {
+      title: "Produk Paling Menguntungkan",
+      description:
+        "Produk dengan laba kotor terbesar dari transaksi yang memiliki data HPP.",
+      emptyTitle: "Belum ada data laba produk",
+      emptyDescription:
+        "Produk paling menguntungkan akan muncul setelah terdapat transaksi dengan snapshot HPP.",
+      sku: "SKU: {{sku}}",
+      margin: "Margin {{margin}}",
+      sales: "Penjualan",
+      cost: "HPP",
+      soldLabel: "Terjual",
     },
 
     topProducts: {

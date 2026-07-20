@@ -544,9 +544,14 @@ const en = {
       transactionNo: "Transaction No.",
       date: "Date",
       payment: "Payment",
-      total: "Total",
+      total: "Sales",
+      cost: "COGS",
+      grossProfit: "Gross Profit",
+      margin: "Margin",
       paid: "Paid",
       change: "Change",
+      partialData: "Partial data",
+      availableCostOnly: "From available cost data",
       note: "Note",
       actions: "Actions",
       empty: "No transactions found.",
@@ -595,9 +600,14 @@ const en = {
       errorDescription: "Please try loading the transaction again.",
       retry: "Try Again",
       transactionNo: "Transaction No.",
-      total: "Total",
+      total: "Sales",
+      cost: "COGS",
+      grossProfit: "Gross Profit",
+      margin: "Margin",
       paid: "Paid",
       change: "Change",
+      partialData: "Partial data",
+      availableCostOnly: "From available cost data",
       purchasedItems: "Purchased Items",
       product: "Product",
       sku: "SKU",
@@ -629,8 +639,8 @@ const en = {
     },
   },
   reports: {
-    title: "Sales Reports",
-    description: "Review sales performance, top products, and transaction history.",
+    title: "Sales & Profit Reports",
+    description: "Review sales, COGS, gross profit, margin, top products, and transaction history.",
 
     toolbar: {
       title: "Report Filters",
@@ -649,6 +659,23 @@ const en = {
         title: "Total Sales",
         description: "Revenue from all filtered transactions",
       },
+      totalCost: {
+        title: "Total COGS",
+        description: "Cost of goods sold with available cost data",
+      },
+      grossProfit: {
+        title: "Gross Profit",
+        description: "Revenue minus COGS from available cost data",
+      },
+      grossMargin: {
+        title: "Gross Margin",
+        description: "Gross profit percentage on sales with available cost data",
+      },
+      costDataWarning: {
+        title: "Some cost data is unavailable",
+        description:
+          "{{missingCount}} legacy transaction items do not have a cost snapshot. Profit currently uses {{costedCount}} items with eligible sales of {{eligibleSales}}.",
+      },
       transactions: {
         title: "Transactions",
         description: "Number of matching transactions",
@@ -664,14 +691,14 @@ const en = {
     },
 
     error: {
-      title: "Failed to load sales report",
-      description: "The sales report could not be loaded. Check the connection and try again.",
+      title: "Failed to load sales and profit report",
+      description: "The sales and profit report could not be loaded. Check the connection and try again.",
       retry: "Try Again",
     },
 
     transactions: {
-      title: "Sales Transactions",
-      description: "Detailed transactions matching the selected report filters.",
+      title: "Sales & Profit Details",
+      description: "Sales, COGS, gross profit, and margin details for transactions matching the selected filters.",
     },
 
     table: {
@@ -680,9 +707,14 @@ const en = {
       payment: "Payment",
       quantity: "Product Quantity",
       unitPrice: "Product Price",
-      total: "Total",
+      total: "Sales",
+      cost: "COGS",
+      grossProfit: "Gross Profit",
+      margin: "Margin",
       paid: "Paid",
       change: "Change",
+      partialData: "Partial data",
+      availableCostOnly: "From available cost data",
       emptyTitle: "No sales transactions found",
       emptyDescription: "Adjust the report filters to find matching transactions.",
     },
@@ -693,6 +725,20 @@ const en = {
       page: "Page {{current}} of {{last}}",
       previousPage: "Previous page",
       nextPage: "Next page",
+    },
+
+    mostProfitableProducts: {
+      title: "Most Profitable Products",
+      description:
+        "Products with the highest gross profit from transactions with available cost data.",
+      emptyTitle: "No product profit data yet",
+      emptyDescription:
+        "The most profitable products will appear after transactions contain cost snapshots.",
+      sku: "SKU: {{sku}}",
+      margin: "Margin {{margin}}",
+      sales: "Sales",
+      cost: "COGS",
+      soldLabel: "Sold",
     },
 
     topProducts: {

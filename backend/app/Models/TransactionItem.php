@@ -15,13 +15,20 @@ class TransactionItem extends Model
         'quantity',
         'unit_price',
         'subtotal',
+        'unit_cost',
+        'cost_subtotal',
+        'gross_profit',
     ];
 
     protected function casts(): array
     {
         return [
+            'quantity' => 'integer',
             'unit_price' => 'decimal:2',
             'subtotal' => 'decimal:2',
+            'unit_cost' => 'decimal:2',
+            'cost_subtotal' => 'decimal:2',
+            'gross_profit' => 'decimal:2',
         ];
     }
 

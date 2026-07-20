@@ -1,8 +1,12 @@
 import {
+  AlertTriangle,
   Banknote,
+  CircleDollarSign,
   Package,
+  Percent,
   ReceiptText,
   TrendingUp,
+  Wallet,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -45,6 +49,13 @@ export default function SalesReportSummaryCards({
     ).format(value);
   }
 
+  function formatPercentage(value: string) {
+    return `${new Intl.NumberFormat(locale, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number(value))}%`;
+  }
+
   const cards = [
     {
       title: t(
@@ -57,6 +68,42 @@ export default function SalesReportSummaryCards({
         "reports.summary.totalSales.description",
       ),
       icon: Banknote,
+    },
+    {
+      title: t(
+        "reports.summary.totalCost.title",
+      ),
+      value: formatCurrency(
+        summary.total_cost,
+      ),
+      description: t(
+        "reports.summary.totalCost.description",
+      ),
+      icon: Wallet,
+    },
+    {
+      title: t(
+        "reports.summary.grossProfit.title",
+      ),
+      value: formatCurrency(
+        summary.gross_profit,
+      ),
+      description: t(
+        "reports.summary.grossProfit.description",
+      ),
+      icon: CircleDollarSign,
+    },
+    {
+      title: t(
+        "reports.summary.grossMargin.title",
+      ),
+      value: formatPercentage(
+        summary.gross_margin_percentage,
+      ),
+      description: t(
+        "reports.summary.grossMargin.description",
+      ),
+      icon: Percent,
     },
     {
       title: t(
@@ -97,32 +144,69 @@ export default function SalesReportSummaryCards({
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {cards.map((card) => {
-        const Icon = card.icon;
+    <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {cards.map((card) => {
+          const Icon = card.icon;
 
-        return (
-          <Card key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {card.title}
-              </CardTitle>
+          return (
+            <Card key={card.title}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {card.title}
+                </CardTitle>
 
-              <Icon className="size-5 text-muted-foreground" />
-            </CardHeader>
+                <Icon className="size-5 text-muted-foreground" />
+              </CardHeader>
 
-            <CardContent>
-              <p className="text-2xl font-bold">
-                {card.value}
-              </p>
+              <CardContent>
+                <p className="text-2xl font-bold">
+                  {card.value}
+                </p>
 
-              <p className="mt-1 text-xs text-muted-foreground">
-                {card.description}
-              </p>
-            </CardContent>
-          </Card>
-        );
-      })}
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {card.description}
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {!summary.profit_data_complete && (
+        <div
+          aria-live="polite"
+          className="flex gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4"
+          role="status"
+        >
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-600" />
+
+          <div className="space-y-1">
+            <p className="text-sm font-semibold">
+              {t(
+                "reports.summary.costDataWarning.title",
+              )}
+            </p>
+
+            <p className="text-sm text-muted-foreground">
+              {t(
+                "reports.summary.costDataWarning.description",
+                {
+                  missingCount: formatNumber(
+                    summary.missing_cost_items_count,
+                  ),
+                  costedCount: formatNumber(
+                    summary.costed_items_count,
+                  ),
+                  eligibleSales: formatCurrency(
+                    summary.profit_eligible_sales,
+                  ),
+                },
+              )}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

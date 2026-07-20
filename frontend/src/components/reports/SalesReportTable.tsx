@@ -1,7 +1,17 @@
-import { FileSearch } from "lucide-react";
+import {
+  AlertTriangle,
+  ReceiptText,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -22,7 +32,7 @@ type SalesReportTableProps = {
   transactions: SalesReportTransaction[];
 };
 
-const paymentLabelKeys: Record<
+const paymentMethodLabelKeys: Record<
   PaymentMethod,
   string
 > = {
@@ -30,16 +40,6 @@ const paymentLabelKeys: Record<
   qris: "transactions.paymentMethods.qris",
   transfer:
     "transactions.paymentMethods.transfer",
-};
-
-const paymentClassNames: Record<
-  PaymentMethod,
-  string
-> = {
-  cash: "bg-emerald-100 text-emerald-700",
-  qris: "bg-sky-100 text-sky-700",
-  transfer:
-    "bg-violet-100 text-violet-700",
 };
 
 export default function SalesReportTable({
@@ -66,7 +66,14 @@ export default function SalesReportTable({
     ).format(value);
   }
 
-  function formatDate(value: string) {
+  function formatPercentage(value: string) {
+    return `${new Intl.NumberFormat(locale, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number(value))}%`;
+  }
+
+  function formatDateTime(value: string) {
     const date = new Date(value);
 
     if (Number.isNaN(date.getTime())) {
@@ -80,141 +87,143 @@ export default function SalesReportTable({
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
-      <Table className="min-w-[1080px]">
-        <TableHeader>
-          <TableRow>
-            <TableHead className="sticky top-0 z-10 min-w-[200px] bg-background">
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          {t("reports.transactions.title")}
+        </CardTitle>
+
+        <CardDescription>
+          {t(
+            "reports.transactions.description",
+          )}
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        {transactions.length === 0 ? (
+          <div className="flex min-h-64 flex-col items-center justify-center rounded-md border border-dashed px-4 text-center">
+            <ReceiptText className="mb-3 size-8 text-muted-foreground" />
+
+            <p className="text-sm font-medium">
               {t(
-                "reports.table.productNames",
+                "reports.table.emptyTitle",
               )}
-            </TableHead>
+            </p>
 
-            <TableHead className="sticky top-0 z-10 min-w-[160px] bg-background">
-              {t("reports.table.date")}
-            </TableHead>
-
-            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background">
-              {t("reports.table.payment")}
-            </TableHead>
-
-            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background text-right">
-              {t("reports.table.quantity")}
-            </TableHead>
-
-            <TableHead className="sticky top-0 z-10 min-w-[130px] bg-background text-right">
-              {t("reports.table.unitPrice")}
-            </TableHead>
-
-            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background text-right">
-              {t("reports.table.total")}
-            </TableHead>
-
-            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background text-right">
-              {t("reports.table.paid")}
-            </TableHead>
-
-            <TableHead className="sticky top-0 z-10 min-w-[120px] bg-background text-right">
-              {t("reports.table.change")}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {transactions.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={8}
-                className="h-48 text-center"
-              >
-                <div className="flex flex-col items-center justify-center text-muted-foreground">
-                  <FileSearch className="mb-3 size-8" />
-
-                  <p className="text-sm font-medium text-foreground">
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t(
+                "reports.table.emptyDescription",
+              )}
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-md border">
+            <Table className="min-w-[1750px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-52">
                     {t(
-                      "reports.table.emptyTitle",
+                      "reports.table.productNames",
                     )}
-                  </p>
+                  </TableHead>
 
-                  <p className="mt-1 text-xs">
+                  <TableHead className="min-w-44">
+                    {t("reports.table.date")}
+                  </TableHead>
+
+                  <TableHead>
+                    {t("reports.table.payment")}
+                  </TableHead>
+
+                  <TableHead className="text-right">
+                    {t("reports.table.quantity")}
+                  </TableHead>
+
+                  <TableHead className="min-w-36 text-right">
+                    {t("reports.table.unitPrice")}
+                  </TableHead>
+
+                  <TableHead className="min-w-36 text-right">
+                    {t("reports.table.total")}
+                  </TableHead>
+
+                  <TableHead className="min-w-36 text-right">
+                    {t("reports.table.cost")}
+                  </TableHead>
+
+                  <TableHead className="min-w-36 text-right">
                     {t(
-                      "reports.table.emptyDescription",
+                      "reports.table.grossProfit",
                     )}
-                  </p>
-                </div>
-              </TableCell>
-            </TableRow>
-          ) : (
-            transactions.map(
-              (
-                transaction,
-                transactionIndex,
-              ) => {
-                const items =
-                  transaction.items.length > 0
-                    ? transaction.items
-                    : [null];
+                  </TableHead>
 
-                return items.map(
-                  (item, itemIndex) => (
+                  <TableHead className="min-w-28 text-right">
+                    {t("reports.table.margin")}
+                  </TableHead>
+
+                  <TableHead className="min-w-36 text-right">
+                    {t("reports.table.paid")}
+                  </TableHead>
+
+                  <TableHead className="min-w-36 text-right">
+                    {t("reports.table.change")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {transactions.map(
+                  (transaction) => (
                     <TableRow
-                      key={
-                        item
-                          ? `${transaction.id}-${item.id}`
-                          : `${transaction.id}-empty`
-                      }
-                      className={
-                        transactionIndex > 0 &&
-                        itemIndex === 0
-                          ? "border-t-2"
-                          : undefined
-                      }
+                      key={transaction.id}
+                      className="align-top"
                     >
-                      <TableCell className="align-middle">
-                        {item ? (
-                          <div className="min-w-0">
-                            <p
-                              className="font-medium"
-                              title={
-                                item.product_name
-                              }
-                            >
-                              {
-                                item.product_name
-                              }
-                            </p>
+                      <TableCell>
+                        <div className="space-y-2">
+                          {transaction.items.map(
+                            (item) => (
+                              <div
+                                key={item.id}
+                                className="min-h-10"
+                              >
+                                <p
+                                  className="max-w-56 truncate text-sm font-medium"
+                                  title={
+                                    item.product_name
+                                  }
+                                >
+                                  {
+                                    item.product_name
+                                  }
+                                </p>
 
-                            <p
-                              className="mt-0.5 text-xs text-muted-foreground"
-                              title={
-                                item.product_sku
-                              }
-                            >
-                              {item.product_sku}
-                            </p>
-                          </div>
-                        ) : (
-                          "-"
-                        )}
+                                <p
+                                  className="max-w-56 truncate text-xs text-muted-foreground"
+                                  title={
+                                    item.product_sku
+                                  }
+                                >
+                                  {
+                                    item.product_sku
+                                  }
+                                </p>
+                              </div>
+                            ),
+                          )}
+                        </div>
                       </TableCell>
 
-                      <TableCell className="whitespace-nowrap align-middle">
-                        {formatDate(
+                      <TableCell className="whitespace-nowrap text-muted-foreground">
+                        {formatDateTime(
                           transaction.created_at,
                         )}
                       </TableCell>
 
-                      <TableCell className="align-middle">
-                        <Badge
-                          className={
-                            paymentClassNames[
-                              transaction
-                                .payment_method
-                            ]
-                          }
-                        >
+                      <TableCell>
+                        <Badge variant="outline">
                           {t(
-                            paymentLabelKeys[
+                            paymentMethodLabelKeys[
                               transaction
                                 .payment_method
                             ],
@@ -222,55 +231,114 @@ export default function SalesReportTable({
                         </Badge>
                       </TableCell>
 
-                      <TableCell className="whitespace-nowrap align-middle text-right">
-                        {item
-                          ? formatNumber(
-                              item.quantity,
-                            )
-                          : "-"}
+                      <TableCell className="text-right">
+                        <div className="space-y-2">
+                          {transaction.items.map(
+                            (item) => (
+                              <div
+                                key={item.id}
+                                className="flex min-h-10 items-center justify-end"
+                              >
+                                {formatNumber(
+                                  item.quantity,
+                                )}
+                              </div>
+                            ),
+                          )}
+                        </div>
                       </TableCell>
 
-                      <TableCell className="whitespace-nowrap align-middle text-right">
-                        {item
-                          ? formatCurrency(
-                              item.unit_price,
-                            )
-                          : "-"}
+                      <TableCell className="text-right">
+                        <div className="space-y-2">
+                          {transaction.items.map(
+                            (item) => (
+                              <div
+                                key={item.id}
+                                className="flex min-h-10 items-center justify-end whitespace-nowrap"
+                              >
+                                {formatCurrency(
+                                  item.unit_price,
+                                )}
+                              </div>
+                            ),
+                          )}
+                        </div>
                       </TableCell>
 
-                      <TableCell className="whitespace-nowrap align-middle text-right font-medium">
-                        {item
-                          ? formatCurrency(
-                              item.subtotal,
-                            )
-                          : formatCurrency(
-                              transaction.total_amount,
+                      <TableCell className="whitespace-nowrap text-right font-semibold">
+                        {formatCurrency(
+                          transaction.total_amount,
+                        )}
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        <div className="space-y-1">
+                          <p className="whitespace-nowrap font-medium">
+                            {formatCurrency(
+                              transaction.total_cost,
                             )}
+                          </p>
+
+                          {!transaction.profit_data_complete && (
+                            <Badge
+                              variant="outline"
+                              className="gap-1 whitespace-nowrap text-amber-600"
+                            >
+                              <AlertTriangle className="size-3" />
+
+                              {t(
+                                "reports.table.partialData",
+                              )}
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
 
-                      <TableCell className="whitespace-nowrap align-middle text-right">
-                        {itemIndex === 0
-                          ? formatCurrency(
-                              transaction.paid_amount,
-                            )
-                          : "-"}
+                      <TableCell className="text-right">
+                        <div className="space-y-1">
+                          <p className="whitespace-nowrap font-semibold text-emerald-600">
+                            {formatCurrency(
+                              transaction.gross_profit,
+                            )}
+                          </p>
+
+                          {!transaction.profit_data_complete && (
+                            <p className="text-xs text-muted-foreground">
+                              {t(
+                                "reports.table.availableCostOnly",
+                              )}
+                            </p>
+                          )}
+                        </div>
                       </TableCell>
 
-                      <TableCell className="whitespace-nowrap align-middle text-right">
-                        {itemIndex === 0
-                          ? formatCurrency(
-                              transaction.change_amount,
-                            )
-                          : "-"}
+                      <TableCell className="text-right">
+                        <span className="whitespace-nowrap font-medium">
+                          {formatPercentage(
+                            transaction.gross_margin_percentage,
+                          )}
+                        </span>
+                      </TableCell>
+
+                      <TableCell className="whitespace-nowrap text-right">
+                        {formatCurrency(
+                          transaction.paid_amount,
+                        )}
+                      </TableCell>
+
+                      <TableCell className="whitespace-nowrap text-right">
+                        {formatCurrency(
+                          transaction.change_amount,
+                        )}
                       </TableCell>
                     </TableRow>
                   ),
-                );
-              },
-            )
-          )}
-        </TableBody>
-      </Table>
-    </div>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

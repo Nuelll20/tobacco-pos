@@ -6,6 +6,7 @@ use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SalesReportController;
+use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,27 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('inventory-movements', InventoryMovementController::class)
         ->only(['index', 'store', 'show', 'update']);
+
+    Route::post(
+        '/stock-opnames/{stockOpname}/finalize',
+        [StockOpnameController::class, 'finalize']
+    );
+
+    Route::post(
+        '/stock-opnames/{stockOpname}/cancel',
+        [StockOpnameController::class, 'cancel']
+    );
+
+    Route::apiResource('stock-opnames', StockOpnameController::class)
+        ->parameters([
+            'stock-opnames' => 'stockOpname',
+        ])
+        ->only([
+            'index',
+            'store',
+            'show',
+            'update',
+        ]);
 
     Route::apiResource('transactions', TransactionController::class)
         ->only(['index', 'store', 'show', 'update']);

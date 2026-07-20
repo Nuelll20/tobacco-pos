@@ -8,6 +8,7 @@ import {
   ShoppingCart,
   Truck,
   ShoppingBasket,
+  ClipboardCheck,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
@@ -37,6 +38,11 @@ const menus = [
     titleKey: "navigation.inventory",
     icon: Boxes,
     href: "/inventory",
+  },
+  {
+    titleKey: "navigation.stockOpnames",
+    icon: ClipboardCheck,
+    href: "/stock-opnames",
   },
   {
     titleKey: "navigation.transactions",

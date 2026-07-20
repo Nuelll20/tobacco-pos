@@ -1,0 +1,20 @@
+import { useQuery } from "@tanstack/react-query";
+
+import { getSuppliers } from "@/services/supplier.service";
+
+import type {
+  SupplierQueryParams,
+} from "@/types/supplier";
+
+export function useSuppliers(
+  params?: SupplierQueryParams,
+) {
+  return useQuery({
+    queryKey: [
+      "suppliers",
+      params,
+    ],
+    queryFn: () =>
+      getSuppliers(params),
+  });
+}

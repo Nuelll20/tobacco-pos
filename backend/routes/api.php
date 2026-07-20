@@ -4,7 +4,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SalesReportController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,9 +34,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('products', ProductController::class);
 
+    Route::apiResource('suppliers', SupplierController::class);
+
+    Route::post(
+        '/purchases/{purchase}/receive',
+        [PurchaseController::class, 'receive']
+    );
+
+    Route::post(
+        '/purchases/{purchase}/cancel',
+        [PurchaseController::class, 'cancel']
+    );
+
+    Route::apiResource('purchases', PurchaseController::class)
+        ->only(['index', 'store', 'show', 'update']);
+
     Route::apiResource('inventory-movements', InventoryMovementController::class)
-        ->only(['index', 'store', 'show']);
+        ->only(['index', 'store', 'show', 'update']);
 
     Route::apiResource('transactions', TransactionController::class)
-        ->only(['index', 'store', 'show']);
+        ->only(['index', 'store', 'show', 'update']);
 });

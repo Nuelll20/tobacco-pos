@@ -388,7 +388,7 @@ const en = {
       product: "Product",
       loadingProducts: "Loading products...",
       selectProduct: "Select a product",
-      productOption: "{{name}} â€” {{sku}}",
+      productOption: "{{name}} - {{sku}}",
       quantity: "Quantity",
       unitCost: "Unit Cost",
       subtotal: "Subtotal",
@@ -751,6 +751,35 @@ const en = {
       sold: "{{count}} sold",
     },
   },
+  lowStockNotifications: {
+    trigger: "{{count}} low-stock notifications",
+    title: "Stock Alerts",
+    description: "{{count}} products need attention.",
+    loading: "Loading stock notifications...",
+
+    statuses: {
+      outOfStock: "Out of Stock",
+      lowStock: "Low Stock",
+    },
+
+    stockSummary: "Stock {{stock}} · Minimum {{minimum}}",
+
+    empty: {
+      title: "All stock levels are safe",
+      description: "No active products have reached their minimum stock level.",
+    },
+
+    error: {
+      title: "Failed to load notifications",
+      description: "The low-stock data could not be loaded. Please try again.",
+    },
+
+    actions: {
+      retry: "Try Again",
+      viewProducts: "View Products",
+      viewAll: "View All {{count}} Products",
+    },
+  },
   stockOpnames: {
     title: "Stock Opname",
     description: "Record physical stock counts and adjust inventory through a controlled process.",
@@ -868,7 +897,7 @@ const en = {
     },
 
     pagination: {
-      showing: "Showing {{from}}–{{to}} of {{total}} records",
+      showing: "Showing {{from}}-{{to}} of {{total}} records",
       rowsPerPage: "Rows per page",
       page: "Page {{current}} of {{last}}",
       previousPage: "Previous page",

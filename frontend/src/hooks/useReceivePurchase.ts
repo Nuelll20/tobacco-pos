@@ -4,6 +4,9 @@ import {
 } from "@tanstack/react-query";
 
 import {
+  lowStockNotificationQueryKey,
+} from "@/hooks/useLowStockNotifications";
+import {
   receivePurchase,
 } from "@/services/purchase.service";
 
@@ -36,6 +39,11 @@ export function useReceivePurchase() {
         queryKey: [
           "inventory-movements",
         ],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey:
+          lowStockNotificationQueryKey,
       });
 
       queryClient.invalidateQueries({

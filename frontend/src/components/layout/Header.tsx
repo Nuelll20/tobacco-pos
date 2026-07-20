@@ -1,8 +1,8 @@
-import { Bell, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
+import LowStockNotificationMenu from "@/components/layout/LowStockNotificationMenu";
 import { Input } from "@/components/ui/input";
 
 const pageTitleKeys = {
@@ -40,14 +40,7 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label={t("header.notifications")}
-        >
-          <Bell className="h-5 w-5" />
-        </Button>
+        <LowStockNotificationMenu />
 
         <div className="flex items-center gap-2 rounded-lg border px-3 py-2">
           <User className="h-4 w-4" />

@@ -1,6 +1,14 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
-import { deleteProduct } from "@/services/product.service";
+import {
+  lowStockNotificationQueryKey,
+} from "@/hooks/useLowStockNotifications";
+import {
+  deleteProduct,
+} from "@/services/product.service";
 
 export function useDeleteProduct() {
   const queryClient = useQueryClient();
@@ -11,6 +19,15 @@ export function useDeleteProduct() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["products"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey:
+          lowStockNotificationQueryKey,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard"],
       });
     },
   });

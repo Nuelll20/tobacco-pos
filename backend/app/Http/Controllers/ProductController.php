@@ -2,23 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Validation\Rule;
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Http\Resources\ProductResource;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
+use App\Models\InventoryMovement;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $validated = $request->validate([
             'search' => ['nullable', 'string', 'max:255'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'is_active' => [
+                'nullable',
+                Rule::in(['true', 'false', '1', '0']),
+            ],
             'sort_by' => [
                 'nullable',
                 'string',
@@ -36,6 +40,14 @@ class ProductController extends Controller
         $sortBy = $validated['sort_by'] ?? 'created_at';
         $sortDirection = $validated['sort_direction'] ?? 'desc';
 
+        $isActive = array_key_exists('is_active', $validated)
+            ? filter_var(
+                $validated['is_active'],
+                FILTER_VALIDATE_BOOLEAN,
+                FILTER_NULL_ON_FAILURE
+            )
+            : null;
+
         $products = Product::query()
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
@@ -44,6 +56,10 @@ class ProductController extends Controller
                         ->orWhere('sku', 'like', "%{$search}%");
                 });
             })
+            ->when(
+                $isActive !== null,
+                fn ($query) => $query->where('is_active', $isActive)
+            )
             ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage)
             ->withQueryString();
@@ -51,43 +67,63 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
-    /**
-     * Store a newly created resource.
-     */
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create($request->validated());
+        $data = $request->validated();
 
-        return new ProductResource($product);
+        $openingStock = (int) $data['stock'];
+        $data['stock'] = 0;
+
+        $product = DB::transaction(function () use ($data, $openingStock) {
+            $product = Product::query()->create($data);
+
+            if ($openingStock > 0) {
+                $product->update([
+                    'stock' => $openingStock,
+                ]);
+
+                InventoryMovement::query()->create([
+                    'product_id' => $product->id,
+                    'type' => 'stock_in',
+                    'quantity' => $openingStock,
+                    'stock_before' => 0,
+                    'stock_after' => $openingStock,
+                    'reference_no' => 'OPENING-' . $product->sku,
+                    'note' => 'Opening stock when product was created.',
+                ]);
+            }
+
+            return $product->fresh();
+        });
+
+        return (new ProductResource($product))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Product $product)
     {
         return new ProductResource($product);
     }
 
-    /**
-     * Update the specified resource.
-     */
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->validated());
 
-        return new ProductResource($product);
+        return new ProductResource($product->fresh());
     }
 
-    /**
-     * Remove the specified resource.
-     */
     public function destroy(Product $product)
     {
-        $product->delete();
+        if ($product->is_active) {
+            $product->update([
+                'is_active' => false,
+            ]);
+        }
 
         return response()->json([
-            'message' => 'Product deleted successfully',
+            'message' => 'Product deactivated successfully.',
+            'data' => new ProductResource($product->fresh()),
         ]);
     }
 }

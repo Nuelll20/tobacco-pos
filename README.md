@@ -4,7 +4,7 @@ Modern Point of Sale System
 
 ## Status
 
-Under Development
+Final Development
 
 ## Tech Stack
 
